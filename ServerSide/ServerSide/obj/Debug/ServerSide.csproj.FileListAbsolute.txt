@@ -1,0 +1,10 @@
+G:\4term\КСиС\CourseWork\ServerSide\ServerSide\bin\Debug\ServerSide.exe.config
+G:\4term\КСиС\CourseWork\ServerSide\ServerSide\bin\Debug\ServerSide.exe
+G:\4term\КСиС\CourseWork\ServerSide\ServerSide\bin\Debug\ServerSide.pdb
+G:\4term\КСиС\CourseWork\ServerSide\ServerSide\bin\Debug\CommonInformation.dll
+G:\4term\КСиС\CourseWork\ServerSide\ServerSide\bin\Debug\CommonInformation.pdb
+G:\4term\КСиС\CourseWork\ServerSide\ServerSide\obj\Debug\ServerSide.csprojAssemblyReference.cache
+G:\4term\КСиС\CourseWork\ServerSide\ServerSide\obj\Debug\ServerSide.csproj.CoreCompileInputs.cache
+G:\4term\КСиС\CourseWork\ServerSide\ServerSide\obj\Debug\ServerSide.csproj.CopyComplete
+G:\4term\КСиС\CourseWork\ServerSide\ServerSide\obj\Debug\ServerSide.exe
+G:\4term\КСиС\CourseWork\ServerSide\ServerSide\obj\Debug\ServerSide.pdb

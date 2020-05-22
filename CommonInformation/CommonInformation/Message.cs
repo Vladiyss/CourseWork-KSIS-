@@ -12,18 +12,21 @@ namespace CommonInformation
         public string clientName;
     }
 
+    public struct Question
+    {
+        public string Title;
+    }
+
+    public struct Answer
+    {
+        public string Title;
+        public bool IsRight;
+    }
+
     public class Message
     {
-        public static Dictionary<int, string> MessageType = new Dictionary<int, string>()
-        {
-            [1] = "Common",
-            [2] = "Private",
-            [3] = "History",
-            [4] = "JoinToChat",
-            [5] = "ClientsList",
-            [6] = "SearchRequest",
-            [7] = "SearchResponce"
-        };
+        public enum MessageType { Common, Private, History, JoinToChat, ClientsList, SearchRequest, SearchResponce, CheckConnection,
+        StartGameRequest, StartGameResponse, PlayerAnswer, OpponentRightAnswer, YourAnswerStatus, GameStatus, GameResults, LeftGame };
 
         public int clientPort;
         public int serverPort;
@@ -31,23 +34,32 @@ namespace CommonInformation
         public int messageReceiverID;
         public string IPAdress;
 
-        public string messageType;
+        public MessageType messageType;
         public string messageContent;
         public string messageName;
+
+        public string gameStartDetails;
+        public bool mayStartGame;
+        public string[] questionsToSend;
+        public string[] answersToSend;
+        public int answeredQuestionNumber;
+        public int answerNumber;
+        public bool isCorrectAnswer;
+        public string gameStatus;
 
         public List<ClientsInfo> clientsInfo;
         public List<string> messageHistory;
 
         public DateTime messageTime;
 
-        public Message(string iPAdress, int port, string messageType)
+        public Message(string iPAdress, int port, MessageType messageType)
         {
             IPAdress = iPAdress;
             clientPort = port;
             this.messageType = messageType;
         }
 
-        public Message(string name, string content, string type)
+        public Message(string name, string content, MessageType type)
         {
             messageName = name;
             messageContent = content;
@@ -59,13 +71,13 @@ namespace CommonInformation
         {
             messageReceiverID = receiver;
             messageContent = content;
-            messageType = MessageType[2];
+            messageType = MessageType.Private;
         }
 
         public Message(List<ClientsInfo> clientsInfo)
         {
             this.clientsInfo = clientsInfo;
-            messageType = MessageType[5];
+            messageType = MessageType.ClientsList;
         }
 
         public Message() { }

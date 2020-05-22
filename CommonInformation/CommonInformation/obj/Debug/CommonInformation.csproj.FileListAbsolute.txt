@@ -1,0 +1,6 @@
+G:\4term\КСиС\CourseWork\CommonInformation\CommonInformation\bin\Debug\CommonInformation.dll
+G:\4term\КСиС\CourseWork\CommonInformation\CommonInformation\bin\Debug\CommonInformation.pdb
+G:\4term\КСиС\CourseWork\CommonInformation\CommonInformation\obj\Debug\CommonInformation.csprojAssemblyReference.cache
+G:\4term\КСиС\CourseWork\CommonInformation\CommonInformation\obj\Debug\CommonInformation.csproj.CoreCompileInputs.cache
+G:\4term\КСиС\CourseWork\CommonInformation\CommonInformation\obj\Debug\CommonInformation.dll
+G:\4term\КСиС\CourseWork\CommonInformation\CommonInformation\obj\Debug\CommonInformation.pdb

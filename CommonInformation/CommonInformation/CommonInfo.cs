@@ -30,7 +30,7 @@ namespace CommonInformation
             return IPaddress;
         }
 
-        public static int RetrieveMessageType(string messageType)
+        /*public static int RetrieveMessageType(string messageType)
         {
             int i = 1;
             bool flag = true;
@@ -43,6 +43,6 @@ namespace CommonInformation
                     ++i;
             }
             return i;
-        }
+        }*/
     }
 }

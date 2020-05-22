@@ -48,6 +48,7 @@
             this.buttonPlay = new System.Windows.Forms.Button();
             this.buttonSendMessage = new System.Windows.Forms.Button();
             this.panelGame = new System.Windows.Forms.Panel();
+            this.labelAnswerStatus = new System.Windows.Forms.Label();
             this.buttonLeftGame = new System.Windows.Forms.Button();
             this.buttonAnswerD = new System.Windows.Forms.Button();
             this.buttonAnswerC = new System.Windows.Forms.Button();
@@ -63,6 +64,9 @@
             this.labelYourPointsNumber = new System.Windows.Forms.Label();
             this.labelOpponent = new System.Windows.Forms.Label();
             this.labelYou = new System.Windows.Forms.Label();
+            this.labelGameStatus = new System.Windows.Forms.Label();
+            this.buttonAcceptGame = new System.Windows.Forms.Button();
+            this.buttonRejectGame = new System.Windows.Forms.Button();
             this.panelGame.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -74,6 +78,7 @@
             this.buttonFindServer.TabIndex = 0;
             this.buttonFindServer.Text = "Найти сервер";
             this.buttonFindServer.UseVisualStyleBackColor = true;
+            this.buttonFindServer.Click += new System.EventHandler(this.buttonFindServer_Click_1);
             // 
             // label1
             // 
@@ -131,6 +136,7 @@
             this.buttonConnectToServer.TabIndex = 7;
             this.buttonConnectToServer.Text = "Подключиться";
             this.buttonConnectToServer.UseVisualStyleBackColor = true;
+            this.buttonConnectToServer.Click += new System.EventHandler(this.buttonConnectToServer_Click_1);
             // 
             // buttonDisconnect
             // 
@@ -140,6 +146,7 @@
             this.buttonDisconnect.TabIndex = 8;
             this.buttonDisconnect.Text = "Отключиться";
             this.buttonDisconnect.UseVisualStyleBackColor = true;
+            this.buttonDisconnect.Click += new System.EventHandler(this.buttonDisconnect_Click_1);
             // 
             // labelDisplayConnection
             // 
@@ -158,6 +165,7 @@
             this.buttonShowHistory.TabIndex = 10;
             this.buttonShowHistory.Text = "Показать историю сообщений";
             this.buttonShowHistory.UseVisualStyleBackColor = true;
+            this.buttonShowHistory.Click += new System.EventHandler(this.buttonShowHistory_Click_1);
             // 
             // label4
             // 
@@ -176,6 +184,7 @@
             this.comboBoxParticipants.Name = "comboBoxParticipants";
             this.comboBoxParticipants.Size = new System.Drawing.Size(159, 24);
             this.comboBoxParticipants.TabIndex = 12;
+            this.comboBoxParticipants.SelectedIndexChanged += new System.EventHandler(this.comboBoxParticipants_SelectedIndexChanged_1);
             // 
             // labelNewMessage
             // 
@@ -219,6 +228,8 @@
             this.buttonPlay.TabIndex = 17;
             this.buttonPlay.Text = "Играть";
             this.buttonPlay.UseVisualStyleBackColor = true;
+            this.buttonPlay.Visible = false;
+            this.buttonPlay.Click += new System.EventHandler(this.buttonPlay_Click);
             // 
             // buttonSendMessage
             // 
@@ -228,9 +239,11 @@
             this.buttonSendMessage.TabIndex = 18;
             this.buttonSendMessage.Text = "Отправить";
             this.buttonSendMessage.UseVisualStyleBackColor = true;
+            this.buttonSendMessage.Click += new System.EventHandler(this.buttonSendMessage_Click_1);
             // 
             // panelGame
             // 
+            this.panelGame.Controls.Add(this.labelAnswerStatus);
             this.panelGame.Controls.Add(this.buttonLeftGame);
             this.panelGame.Controls.Add(this.buttonAnswerD);
             this.panelGame.Controls.Add(this.buttonAnswerC);
@@ -246,10 +259,20 @@
             this.panelGame.Controls.Add(this.labelYourPointsNumber);
             this.panelGame.Controls.Add(this.labelOpponent);
             this.panelGame.Controls.Add(this.labelYou);
-            this.panelGame.Location = new System.Drawing.Point(697, 23);
+            this.panelGame.Location = new System.Drawing.Point(698, 4);
             this.panelGame.Name = "panelGame";
-            this.panelGame.Size = new System.Drawing.Size(283, 302);
+            this.panelGame.Size = new System.Drawing.Size(283, 322);
             this.panelGame.TabIndex = 19;
+            this.panelGame.Visible = false;
+            // 
+            // labelAnswerStatus
+            // 
+            this.labelAnswerStatus.AutoSize = true;
+            this.labelAnswerStatus.Location = new System.Drawing.Point(3, 299);
+            this.labelAnswerStatus.Name = "labelAnswerStatus";
+            this.labelAnswerStatus.Size = new System.Drawing.Size(23, 17);
+            this.labelAnswerStatus.TabIndex = 15;
+            this.labelAnswerStatus.Text = "---";
             // 
             // buttonLeftGame
             // 
@@ -259,6 +282,7 @@
             this.buttonLeftGame.TabIndex = 14;
             this.buttonLeftGame.Text = "Покинуть игру";
             this.buttonLeftGame.UseVisualStyleBackColor = true;
+            this.buttonLeftGame.Click += new System.EventHandler(this.buttonLeftGame_Click);
             // 
             // buttonAnswerD
             // 
@@ -268,6 +292,7 @@
             this.buttonAnswerD.TabIndex = 13;
             this.buttonAnswerD.Text = "D";
             this.buttonAnswerD.UseVisualStyleBackColor = true;
+            this.buttonAnswerD.Click += new System.EventHandler(this.buttonAnswerD_Click);
             // 
             // buttonAnswerC
             // 
@@ -277,6 +302,7 @@
             this.buttonAnswerC.TabIndex = 12;
             this.buttonAnswerC.Text = "C";
             this.buttonAnswerC.UseVisualStyleBackColor = true;
+            this.buttonAnswerC.Click += new System.EventHandler(this.buttonAnswerC_Click);
             // 
             // buttonAnswerB
             // 
@@ -286,6 +312,7 @@
             this.buttonAnswerB.TabIndex = 11;
             this.buttonAnswerB.Text = "B";
             this.buttonAnswerB.UseVisualStyleBackColor = true;
+            this.buttonAnswerB.Click += new System.EventHandler(this.buttonAnswerB_Click);
             // 
             // buttonAnswerA
             // 
@@ -295,6 +322,7 @@
             this.buttonAnswerA.TabIndex = 10;
             this.buttonAnswerA.Text = "A";
             this.buttonAnswerA.UseVisualStyleBackColor = true;
+            this.buttonAnswerA.Click += new System.EventHandler(this.buttonAnswerA_Click);
             // 
             // labelAnswerD
             // 
@@ -373,9 +401,9 @@
             this.labelOpponent.AutoSize = true;
             this.labelOpponent.Location = new System.Drawing.Point(197, 21);
             this.labelOpponent.Name = "labelOpponent";
-            this.labelOpponent.Size = new System.Drawing.Size(23, 17);
+            this.labelOpponent.Size = new System.Drawing.Size(74, 17);
             this.labelOpponent.TabIndex = 1;
-            this.labelOpponent.Text = "---";
+            this.labelOpponent.Text = "Оппонент";
             // 
             // labelYou
             // 
@@ -386,11 +414,45 @@
             this.labelYou.TabIndex = 0;
             this.labelYou.Text = "ВЫ";
             // 
+            // labelGameStatus
+            // 
+            this.labelGameStatus.AutoSize = true;
+            this.labelGameStatus.Location = new System.Drawing.Point(288, 343);
+            this.labelGameStatus.Name = "labelGameStatus";
+            this.labelGameStatus.Size = new System.Drawing.Size(23, 17);
+            this.labelGameStatus.TabIndex = 20;
+            this.labelGameStatus.Text = "---";
+            // 
+            // buttonAcceptGame
+            // 
+            this.buttonAcceptGame.Location = new System.Drawing.Point(291, 373);
+            this.buttonAcceptGame.Name = "buttonAcceptGame";
+            this.buttonAcceptGame.Size = new System.Drawing.Size(104, 27);
+            this.buttonAcceptGame.TabIndex = 21;
+            this.buttonAcceptGame.Text = "Принять";
+            this.buttonAcceptGame.UseVisualStyleBackColor = true;
+            this.buttonAcceptGame.Visible = false;
+            this.buttonAcceptGame.Click += new System.EventHandler(this.buttonAcceptGame_Click);
+            // 
+            // buttonRejectGame
+            // 
+            this.buttonRejectGame.Location = new System.Drawing.Point(427, 373);
+            this.buttonRejectGame.Name = "buttonRejectGame";
+            this.buttonRejectGame.Size = new System.Drawing.Size(97, 27);
+            this.buttonRejectGame.TabIndex = 22;
+            this.buttonRejectGame.Text = "Отклонить";
+            this.buttonRejectGame.UseVisualStyleBackColor = true;
+            this.buttonRejectGame.Visible = false;
+            this.buttonRejectGame.Click += new System.EventHandler(this.buttonRejectGame_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(993, 506);
+            this.Controls.Add(this.buttonRejectGame);
+            this.Controls.Add(this.buttonAcceptGame);
+            this.Controls.Add(this.labelGameStatus);
             this.Controls.Add(this.panelGame);
             this.Controls.Add(this.buttonSendMessage);
             this.Controls.Add(this.buttonPlay);
@@ -457,6 +519,10 @@
         private System.Windows.Forms.Label labelAnswerB;
         private System.Windows.Forms.Label labelAnswerA;
         private System.Windows.Forms.Label labelQuestion;
+        private System.Windows.Forms.Label labelAnswerStatus;
+        private System.Windows.Forms.Label labelGameStatus;
+        private System.Windows.Forms.Button buttonAcceptGame;
+        private System.Windows.Forms.Button buttonRejectGame;
     }
 }
 

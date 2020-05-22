@@ -1,0 +1,13 @@
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\bin\Debug\ClientSide.exe.config
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\bin\Debug\ClientSide.exe
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\bin\Debug\ClientSide.pdb
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\bin\Debug\CommonInformation.dll
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\bin\Debug\CommonInformation.pdb
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\obj\Debug\ClientSide.csprojAssemblyReference.cache
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\obj\Debug\ClientSide.MainForm.resources
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\obj\Debug\ClientSide.Properties.Resources.resources
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\obj\Debug\ClientSide.csproj.GenerateResource.cache
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\obj\Debug\ClientSide.csproj.CoreCompileInputs.cache
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\obj\Debug\ClientSide.csproj.CopyComplete
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\obj\Debug\ClientSide.exe
+G:\4term\КСиС\CourseWork\ClientSide\ClientSide\obj\Debug\ClientSide.pdb

@@ -39,7 +39,7 @@ namespace ClientSide
             IPEndPoint IPLocalPoint = new IPEndPoint(IPaddress, SERVERUDPPORT);
             listeningUDPSocket.Bind(IPLocalPoint);
 
-            var message = new Message(IPaddress.ToString(), SERVERUDPPORT, Message.MessageType[6]);
+            var message = new Message(IPaddress.ToString(), SERVERUDPPORT, Message.MessageType.SearchRequest);
 
             IPAddress broadcastIPaddress = CommonInfo.GetHostsBroadcastIPAddress();
             IPEndPoint IPendPoint = new IPEndPoint(broadcastIPaddress, SERVERUDPPORT);
@@ -52,13 +52,13 @@ namespace ClientSide
 
         public void ReceiveUDPMessages()
         {
-            byte[] data = new byte[1024];
+            byte[] data = new byte[8192];
             EndPoint remotePoint = new IPEndPoint(IPAddress.Any, 0);
             while (true)
             {
                 int amount = listeningUDPSocket.ReceiveFrom(data, ref remotePoint);
                 Message receivedmessage = messageSerializer.Deserialize(data, amount);
-                if (receivedmessage.messageType == Message.MessageType[7])
+                if (receivedmessage.messageType == Message.MessageType.SearchResponce)
                 {
                     OnMessageReceive(receivedmessage);
                     threadsList.Remove(Thread.CurrentThread);
@@ -70,7 +70,7 @@ namespace ClientSide
 
         public void ReceiveAllMessages()
         {
-            byte[] data = new byte[1024];
+            byte[] data = new byte[8192];
             int amount;
             do
             {
@@ -103,7 +103,7 @@ namespace ClientSide
         {
             if (Connect(IPendPoint))
             {
-                SendMessage(new Message() { messageName = name, messageType = Message.MessageType[4] });
+                SendMessage(new Message() { messageName = name, messageType = Message.MessageType.JoinToChat });
 
                 Thread communicationWithServerThread = new Thread(ReceiveAllMessages);
                 threadsList.Add(communicationWithServerThread);
