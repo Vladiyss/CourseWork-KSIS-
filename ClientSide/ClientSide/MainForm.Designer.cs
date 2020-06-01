@@ -48,6 +48,8 @@
             this.buttonPlay = new System.Windows.Forms.Button();
             this.buttonSendMessage = new System.Windows.Forms.Button();
             this.panelGame = new System.Windows.Forms.Panel();
+            this.buttonHallPrompt = new System.Windows.Forms.Button();
+            this.button5050Prompt = new System.Windows.Forms.Button();
             this.labelAnswerStatus = new System.Windows.Forms.Label();
             this.buttonLeftGame = new System.Windows.Forms.Button();
             this.buttonAnswerD = new System.Windows.Forms.Button();
@@ -67,7 +69,39 @@
             this.labelGameStatus = new System.Windows.Forms.Label();
             this.buttonAcceptGame = new System.Windows.Forms.Button();
             this.buttonRejectGame = new System.Windows.Forms.Button();
+            this.buttonShowStatistics = new System.Windows.Forms.Button();
+            this.richTextBoxStatistics = new System.Windows.Forms.RichTextBox();
+            this.dataGridViewStatistics = new System.Windows.Forms.DataGridView();
+            this.playerName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Games = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Wins = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Draws = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Loses = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RightAnswer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WrongAnswer = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Points = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.comboBoxGameTopics = new System.Windows.Forms.ComboBox();
+            this.labelSelectTopic = new System.Windows.Forms.Label();
+            this.labelTopicIsNotSelected = new System.Windows.Forms.Label();
+            this.panelHallPrompt = new System.Windows.Forms.Panel();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.labelProbabilityAAnswer = new System.Windows.Forms.Label();
+            this.labelProbabilityBAnswer = new System.Windows.Forms.Label();
+            this.labelProbabilityCAnswer = new System.Windows.Forms.Label();
+            this.labelProbabilityDAnswer = new System.Windows.Forms.Label();
+            this.buttonPlayWithRandomPlayer = new System.Windows.Forms.Button();
+            this.labelWaitingForOpponent = new System.Windows.Forms.Label();
+            this.buttonInterruptWaitingForOpponent = new System.Windows.Forms.Button();
             this.panelGame.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewStatistics)).BeginInit();
+            this.panelHallPrompt.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonFindServer
@@ -170,7 +204,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 260);
+            this.label4.Location = new System.Drawing.Point(9, 277);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(78, 17);
             this.label4.TabIndex = 11;
@@ -180,7 +214,7 @@
             // 
             this.comboBoxParticipants.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxParticipants.FormattingEnabled = true;
-            this.comboBoxParticipants.Location = new System.Drawing.Point(96, 260);
+            this.comboBoxParticipants.Location = new System.Drawing.Point(96, 277);
             this.comboBoxParticipants.Name = "comboBoxParticipants";
             this.comboBoxParticipants.Size = new System.Drawing.Size(159, 24);
             this.comboBoxParticipants.TabIndex = 12;
@@ -189,7 +223,7 @@
             // labelNewMessage
             // 
             this.labelNewMessage.AutoSize = true;
-            this.labelNewMessage.Location = new System.Drawing.Point(12, 297);
+            this.labelNewMessage.Location = new System.Drawing.Point(15, 250);
             this.labelNewMessage.Name = "labelNewMessage";
             this.labelNewMessage.Size = new System.Drawing.Size(23, 17);
             this.labelNewMessage.TabIndex = 13;
@@ -197,16 +231,16 @@
             // 
             // richTextBoxChatContent
             // 
-            this.richTextBoxChatContent.Location = new System.Drawing.Point(291, 60);
+            this.richTextBoxChatContent.Location = new System.Drawing.Point(291, 149);
             this.richTextBoxChatContent.Name = "richTextBoxChatContent";
-            this.richTextBoxChatContent.Size = new System.Drawing.Size(385, 234);
+            this.richTextBoxChatContent.Size = new System.Drawing.Size(385, 194);
             this.richTextBoxChatContent.TabIndex = 14;
             this.richTextBoxChatContent.Text = "";
             // 
             // labelCurrentClientDialog
             // 
             this.labelCurrentClientDialog.AutoSize = true;
-            this.labelCurrentClientDialog.Location = new System.Drawing.Point(288, 23);
+            this.labelCurrentClientDialog.Location = new System.Drawing.Point(288, 68);
             this.labelCurrentClientDialog.Name = "labelCurrentClientDialog";
             this.labelCurrentClientDialog.Size = new System.Drawing.Size(23, 17);
             this.labelCurrentClientDialog.TabIndex = 15;
@@ -214,7 +248,7 @@
             // 
             // richTextBoxMessageContent
             // 
-            this.richTextBoxMessageContent.Location = new System.Drawing.Point(291, 300);
+            this.richTextBoxMessageContent.Location = new System.Drawing.Point(291, 354);
             this.richTextBoxMessageContent.Name = "richTextBoxMessageContent";
             this.richTextBoxMessageContent.Size = new System.Drawing.Size(248, 26);
             this.richTextBoxMessageContent.TabIndex = 16;
@@ -222,9 +256,9 @@
             // 
             // buttonPlay
             // 
-            this.buttonPlay.Location = new System.Drawing.Point(565, 23);
+            this.buttonPlay.Location = new System.Drawing.Point(590, 53);
             this.buttonPlay.Name = "buttonPlay";
-            this.buttonPlay.Size = new System.Drawing.Size(111, 27);
+            this.buttonPlay.Size = new System.Drawing.Size(86, 27);
             this.buttonPlay.TabIndex = 17;
             this.buttonPlay.Text = "Играть";
             this.buttonPlay.UseVisualStyleBackColor = true;
@@ -233,7 +267,7 @@
             // 
             // buttonSendMessage
             // 
-            this.buttonSendMessage.Location = new System.Drawing.Point(550, 300);
+            this.buttonSendMessage.Location = new System.Drawing.Point(550, 352);
             this.buttonSendMessage.Name = "buttonSendMessage";
             this.buttonSendMessage.Size = new System.Drawing.Size(126, 26);
             this.buttonSendMessage.TabIndex = 18;
@@ -243,6 +277,9 @@
             // 
             // panelGame
             // 
+            this.panelGame.Controls.Add(this.panelHallPrompt);
+            this.panelGame.Controls.Add(this.buttonHallPrompt);
+            this.panelGame.Controls.Add(this.button5050Prompt);
             this.panelGame.Controls.Add(this.labelAnswerStatus);
             this.panelGame.Controls.Add(this.buttonLeftGame);
             this.panelGame.Controls.Add(this.buttonAnswerD);
@@ -261,14 +298,34 @@
             this.panelGame.Controls.Add(this.labelYou);
             this.panelGame.Location = new System.Drawing.Point(698, 4);
             this.panelGame.Name = "panelGame";
-            this.panelGame.Size = new System.Drawing.Size(283, 322);
+            this.panelGame.Size = new System.Drawing.Size(463, 356);
             this.panelGame.TabIndex = 19;
             this.panelGame.Visible = false;
+            // 
+            // buttonHallPrompt
+            // 
+            this.buttonHallPrompt.Location = new System.Drawing.Point(274, 225);
+            this.buttonHallPrompt.Name = "buttonHallPrompt";
+            this.buttonHallPrompt.Size = new System.Drawing.Size(52, 30);
+            this.buttonHallPrompt.TabIndex = 17;
+            this.buttonHallPrompt.Text = "Зал";
+            this.buttonHallPrompt.UseVisualStyleBackColor = true;
+            this.buttonHallPrompt.Click += new System.EventHandler(this.buttonHallPrompt_Click);
+            // 
+            // button5050Prompt
+            // 
+            this.button5050Prompt.Location = new System.Drawing.Point(274, 189);
+            this.button5050Prompt.Name = "button5050Prompt";
+            this.button5050Prompt.Size = new System.Drawing.Size(52, 30);
+            this.button5050Prompt.TabIndex = 16;
+            this.button5050Prompt.Text = "50/50";
+            this.button5050Prompt.UseVisualStyleBackColor = true;
+            this.button5050Prompt.Click += new System.EventHandler(this.button5050Prompt_Click);
             // 
             // labelAnswerStatus
             // 
             this.labelAnswerStatus.AutoSize = true;
-            this.labelAnswerStatus.Location = new System.Drawing.Point(3, 299);
+            this.labelAnswerStatus.Location = new System.Drawing.Point(3, 332);
             this.labelAnswerStatus.Name = "labelAnswerStatus";
             this.labelAnswerStatus.Size = new System.Drawing.Size(23, 17);
             this.labelAnswerStatus.TabIndex = 15;
@@ -417,7 +474,7 @@
             // labelGameStatus
             // 
             this.labelGameStatus.AutoSize = true;
-            this.labelGameStatus.Location = new System.Drawing.Point(288, 343);
+            this.labelGameStatus.Location = new System.Drawing.Point(291, 383);
             this.labelGameStatus.Name = "labelGameStatus";
             this.labelGameStatus.Size = new System.Drawing.Size(23, 17);
             this.labelGameStatus.TabIndex = 20;
@@ -425,7 +482,7 @@
             // 
             // buttonAcceptGame
             // 
-            this.buttonAcceptGame.Location = new System.Drawing.Point(291, 373);
+            this.buttonAcceptGame.Location = new System.Drawing.Point(289, 414);
             this.buttonAcceptGame.Name = "buttonAcceptGame";
             this.buttonAcceptGame.Size = new System.Drawing.Size(104, 27);
             this.buttonAcceptGame.TabIndex = 21;
@@ -436,7 +493,7 @@
             // 
             // buttonRejectGame
             // 
-            this.buttonRejectGame.Location = new System.Drawing.Point(427, 373);
+            this.buttonRejectGame.Location = new System.Drawing.Point(428, 414);
             this.buttonRejectGame.Name = "buttonRejectGame";
             this.buttonRejectGame.Size = new System.Drawing.Size(97, 27);
             this.buttonRejectGame.TabIndex = 22;
@@ -445,11 +502,298 @@
             this.buttonRejectGame.Visible = false;
             this.buttonRejectGame.Click += new System.EventHandler(this.buttonRejectGame_Click);
             // 
+            // buttonShowStatistics
+            // 
+            this.buttonShowStatistics.Location = new System.Drawing.Point(15, 318);
+            this.buttonShowStatistics.Name = "buttonShowStatistics";
+            this.buttonShowStatistics.Size = new System.Drawing.Size(240, 25);
+            this.buttonShowStatistics.TabIndex = 23;
+            this.buttonShowStatistics.Text = "Показать статистику";
+            this.buttonShowStatistics.UseVisualStyleBackColor = true;
+            this.buttonShowStatistics.Click += new System.EventHandler(this.buttonShowStatistics_Click);
+            // 
+            // richTextBoxStatistics
+            // 
+            this.richTextBoxStatistics.Location = new System.Drawing.Point(12, 362);
+            this.richTextBoxStatistics.Name = "richTextBoxStatistics";
+            this.richTextBoxStatistics.Size = new System.Drawing.Size(273, 110);
+            this.richTextBoxStatistics.TabIndex = 24;
+            this.richTextBoxStatistics.Text = "";
+            this.richTextBoxStatistics.Visible = false;
+            // 
+            // dataGridViewStatistics
+            // 
+            this.dataGridViewStatistics.AllowUserToAddRows = false;
+            this.dataGridViewStatistics.AllowUserToDeleteRows = false;
+            this.dataGridViewStatistics.AllowUserToResizeRows = false;
+            this.dataGridViewStatistics.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewStatistics.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.playerName,
+            this.Games,
+            this.Wins,
+            this.Draws,
+            this.Loses,
+            this.RightAnswer,
+            this.WrongAnswer,
+            this.Points});
+            this.dataGridViewStatistics.Location = new System.Drawing.Point(641, 400);
+            this.dataGridViewStatistics.Name = "dataGridViewStatistics";
+            this.dataGridViewStatistics.RowTemplate.Height = 24;
+            this.dataGridViewStatistics.Size = new System.Drawing.Size(520, 150);
+            this.dataGridViewStatistics.TabIndex = 25;
+            this.dataGridViewStatistics.Visible = false;
+            // 
+            // playerName
+            // 
+            this.playerName.HeaderText = "Имя игрока";
+            this.playerName.Name = "playerName";
+            this.playerName.Width = 150;
+            // 
+            // Games
+            // 
+            this.Games.HeaderText = "Игры";
+            this.Games.Name = "Games";
+            this.Games.Width = 50;
+            // 
+            // Wins
+            // 
+            this.Wins.HeaderText = "П";
+            this.Wins.Name = "Wins";
+            this.Wins.Width = 25;
+            // 
+            // Draws
+            // 
+            this.Draws.HeaderText = "Н";
+            this.Draws.Name = "Draws";
+            this.Draws.Width = 25;
+            // 
+            // Loses
+            // 
+            this.Loses.HeaderText = "П";
+            this.Loses.Name = "Loses";
+            this.Loses.Width = 25;
+            // 
+            // RightAnswer
+            // 
+            this.RightAnswer.HeaderText = "Верно";
+            this.RightAnswer.Name = "RightAnswer";
+            this.RightAnswer.Width = 75;
+            // 
+            // WrongAnswer
+            // 
+            this.WrongAnswer.HeaderText = "Неверно";
+            this.WrongAnswer.Name = "WrongAnswer";
+            this.WrongAnswer.Width = 75;
+            // 
+            // Points
+            // 
+            this.Points.HeaderText = "Очки";
+            this.Points.Name = "Points";
+            this.Points.Width = 50;
+            // 
+            // comboBoxGameTopics
+            // 
+            this.comboBoxGameTopics.FormattingEnabled = true;
+            this.comboBoxGameTopics.Location = new System.Drawing.Point(485, 26);
+            this.comboBoxGameTopics.Name = "comboBoxGameTopics";
+            this.comboBoxGameTopics.Size = new System.Drawing.Size(186, 24);
+            this.comboBoxGameTopics.TabIndex = 26;
+            this.comboBoxGameTopics.Visible = false;
+            this.comboBoxGameTopics.SelectedIndexChanged += new System.EventHandler(this.comboBoxGameTopics_SelectedIndexChanged);
+            // 
+            // labelSelectTopic
+            // 
+            this.labelSelectTopic.AutoSize = true;
+            this.labelSelectTopic.Location = new System.Drawing.Point(286, 29);
+            this.labelSelectTopic.Name = "labelSelectTopic";
+            this.labelSelectTopic.Size = new System.Drawing.Size(109, 17);
+            this.labelSelectTopic.TabIndex = 27;
+            this.labelSelectTopic.Text = "Выберите тему";
+            this.labelSelectTopic.Visible = false;
+            // 
+            // labelTopicIsNotSelected
+            // 
+            this.labelTopicIsNotSelected.AutoSize = true;
+            this.labelTopicIsNotSelected.Location = new System.Drawing.Point(550, 80);
+            this.labelTopicIsNotSelected.Name = "labelTopicIsNotSelected";
+            this.labelTopicIsNotSelected.Size = new System.Drawing.Size(126, 17);
+            this.labelTopicIsNotSelected.TabIndex = 28;
+            this.labelTopicIsNotSelected.Text = "Тема не выбрана!";
+            this.labelTopicIsNotSelected.Visible = false;
+            // 
+            // panelHallPrompt
+            // 
+            this.panelHallPrompt.Controls.Add(this.labelProbabilityDAnswer);
+            this.panelHallPrompt.Controls.Add(this.labelProbabilityCAnswer);
+            this.panelHallPrompt.Controls.Add(this.labelProbabilityBAnswer);
+            this.panelHallPrompt.Controls.Add(this.labelProbabilityAAnswer);
+            this.panelHallPrompt.Controls.Add(this.label13);
+            this.panelHallPrompt.Controls.Add(this.label12);
+            this.panelHallPrompt.Controls.Add(this.label11);
+            this.panelHallPrompt.Controls.Add(this.label10);
+            this.panelHallPrompt.Controls.Add(this.label9);
+            this.panelHallPrompt.Controls.Add(this.label7);
+            this.panelHallPrompt.Controls.Add(this.label6);
+            this.panelHallPrompt.Controls.Add(this.label5);
+            this.panelHallPrompt.Location = new System.Drawing.Point(6, 298);
+            this.panelHallPrompt.Name = "panelHallPrompt";
+            this.panelHallPrompt.Size = new System.Drawing.Size(252, 31);
+            this.panelHallPrompt.TabIndex = 18;
+            this.panelHallPrompt.Visible = false;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 7);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(21, 17);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "A:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(65, 7);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(21, 17);
+            this.label6.TabIndex = 1;
+            this.label6.Text = "B:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(127, 7);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(21, 17);
+            this.label7.TabIndex = 2;
+            this.label7.Text = "C:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(189, 7);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(22, 17);
+            this.label9.TabIndex = 3;
+            this.label9.Text = "D:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(47, 7);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(20, 17);
+            this.label10.TabIndex = 4;
+            this.label10.Text = "%";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(107, 7);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(20, 17);
+            this.label11.TabIndex = 5;
+            this.label11.Text = "%";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(168, 7);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(20, 17);
+            this.label12.TabIndex = 6;
+            this.label12.Text = "%";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(229, 7);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(20, 17);
+            this.label13.TabIndex = 7;
+            this.label13.Text = "%";
+            // 
+            // labelProbabilityAAnswer
+            // 
+            this.labelProbabilityAAnswer.AutoSize = true;
+            this.labelProbabilityAAnswer.Location = new System.Drawing.Point(22, 7);
+            this.labelProbabilityAAnswer.Name = "labelProbabilityAAnswer";
+            this.labelProbabilityAAnswer.Size = new System.Drawing.Size(23, 17);
+            this.labelProbabilityAAnswer.TabIndex = 8;
+            this.labelProbabilityAAnswer.Text = "---";
+            // 
+            // labelProbabilityBAnswer
+            // 
+            this.labelProbabilityBAnswer.AutoSize = true;
+            this.labelProbabilityBAnswer.Location = new System.Drawing.Point(84, 7);
+            this.labelProbabilityBAnswer.Name = "labelProbabilityBAnswer";
+            this.labelProbabilityBAnswer.Size = new System.Drawing.Size(23, 17);
+            this.labelProbabilityBAnswer.TabIndex = 9;
+            this.labelProbabilityBAnswer.Text = "---";
+            // 
+            // labelProbabilityCAnswer
+            // 
+            this.labelProbabilityCAnswer.AutoSize = true;
+            this.labelProbabilityCAnswer.Location = new System.Drawing.Point(146, 7);
+            this.labelProbabilityCAnswer.Name = "labelProbabilityCAnswer";
+            this.labelProbabilityCAnswer.Size = new System.Drawing.Size(23, 17);
+            this.labelProbabilityCAnswer.TabIndex = 10;
+            this.labelProbabilityCAnswer.Text = "---";
+            // 
+            // labelProbabilityDAnswer
+            // 
+            this.labelProbabilityDAnswer.AutoSize = true;
+            this.labelProbabilityDAnswer.Location = new System.Drawing.Point(207, 7);
+            this.labelProbabilityDAnswer.Name = "labelProbabilityDAnswer";
+            this.labelProbabilityDAnswer.Size = new System.Drawing.Size(23, 17);
+            this.labelProbabilityDAnswer.TabIndex = 11;
+            this.labelProbabilityDAnswer.Text = "---";
+            // 
+            // buttonPlayWithRandomPlayer
+            // 
+            this.buttonPlayWithRandomPlayer.Location = new System.Drawing.Point(392, 113);
+            this.buttonPlayWithRandomPlayer.Name = "buttonPlayWithRandomPlayer";
+            this.buttonPlayWithRandomPlayer.Size = new System.Drawing.Size(162, 25);
+            this.buttonPlayWithRandomPlayer.TabIndex = 29;
+            this.buttonPlayWithRandomPlayer.Text = "Случайный игрок";
+            this.buttonPlayWithRandomPlayer.UseVisualStyleBackColor = true;
+            this.buttonPlayWithRandomPlayer.Click += new System.EventHandler(this.buttonPlayWithRandomPlayer_Click);
+            // 
+            // labelWaitingForOpponent
+            // 
+            this.labelWaitingForOpponent.AutoSize = true;
+            this.labelWaitingForOpponent.Location = new System.Drawing.Point(288, 117);
+            this.labelWaitingForOpponent.Name = "labelWaitingForOpponent";
+            this.labelWaitingForOpponent.Size = new System.Drawing.Size(162, 17);
+            this.labelWaitingForOpponent.TabIndex = 30;
+            this.labelWaitingForOpponent.Text = "Ожидайте оппонента...";
+            this.labelWaitingForOpponent.Visible = false;
+            // 
+            // buttonInterruptWaitingForOpponent
+            // 
+            this.buttonInterruptWaitingForOpponent.Location = new System.Drawing.Point(590, 113);
+            this.buttonInterruptWaitingForOpponent.Name = "buttonInterruptWaitingForOpponent";
+            this.buttonInterruptWaitingForOpponent.Size = new System.Drawing.Size(81, 25);
+            this.buttonInterruptWaitingForOpponent.TabIndex = 31;
+            this.buttonInterruptWaitingForOpponent.Text = "Прервать";
+            this.buttonInterruptWaitingForOpponent.UseVisualStyleBackColor = true;
+            this.buttonInterruptWaitingForOpponent.Visible = false;
+            this.buttonInterruptWaitingForOpponent.Click += new System.EventHandler(this.buttonInterruptWaitingForOpponent_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(993, 506);
+            this.ClientSize = new System.Drawing.Size(1173, 587);
+            this.Controls.Add(this.buttonInterruptWaitingForOpponent);
+            this.Controls.Add(this.labelWaitingForOpponent);
+            this.Controls.Add(this.buttonPlayWithRandomPlayer);
+            this.Controls.Add(this.labelTopicIsNotSelected);
+            this.Controls.Add(this.labelSelectTopic);
+            this.Controls.Add(this.comboBoxGameTopics);
+            this.Controls.Add(this.dataGridViewStatistics);
+            this.Controls.Add(this.richTextBoxStatistics);
+            this.Controls.Add(this.buttonShowStatistics);
             this.Controls.Add(this.buttonRejectGame);
             this.Controls.Add(this.buttonAcceptGame);
             this.Controls.Add(this.labelGameStatus);
@@ -477,6 +821,9 @@
             this.Text = "MainForm";
             this.panelGame.ResumeLayout(false);
             this.panelGame.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewStatistics)).EndInit();
+            this.panelHallPrompt.ResumeLayout(false);
+            this.panelHallPrompt.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -523,6 +870,38 @@
         private System.Windows.Forms.Label labelGameStatus;
         private System.Windows.Forms.Button buttonAcceptGame;
         private System.Windows.Forms.Button buttonRejectGame;
+        private System.Windows.Forms.Button buttonShowStatistics;
+        private System.Windows.Forms.RichTextBox richTextBoxStatistics;
+        private System.Windows.Forms.DataGridView dataGridViewStatistics;
+        private System.Windows.Forms.DataGridViewTextBoxColumn playerName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Games;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Wins;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Draws;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Loses;
+        private System.Windows.Forms.DataGridViewTextBoxColumn RightAnswer;
+        private System.Windows.Forms.DataGridViewTextBoxColumn WrongAnswer;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Points;
+        private System.Windows.Forms.ComboBox comboBoxGameTopics;
+        private System.Windows.Forms.Label labelSelectTopic;
+        private System.Windows.Forms.Label labelTopicIsNotSelected;
+        private System.Windows.Forms.Button buttonHallPrompt;
+        private System.Windows.Forms.Button button5050Prompt;
+        private System.Windows.Forms.Panel panelHallPrompt;
+        private System.Windows.Forms.Label labelProbabilityDAnswer;
+        private System.Windows.Forms.Label labelProbabilityCAnswer;
+        private System.Windows.Forms.Label labelProbabilityBAnswer;
+        private System.Windows.Forms.Label labelProbabilityAAnswer;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button buttonPlayWithRandomPlayer;
+        private System.Windows.Forms.Label labelWaitingForOpponent;
+        private System.Windows.Forms.Button buttonInterruptWaitingForOpponent;
     }
 }
 

@@ -26,6 +26,8 @@ namespace ServerSide
         public bool isFirstFinished;
         public bool isSecondFinished;
 
+        public int[] rigthAnswersOnQuestions = new int[Server.NumberOfQuestionsInOneGame];
+
         public Game(int firstPlayerID, int secondPlayerID, string firstPlayerName, string secondPlayerName)
         {
             this.firstPlayerID = firstPlayerID;

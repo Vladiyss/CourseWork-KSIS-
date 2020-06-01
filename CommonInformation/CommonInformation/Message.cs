@@ -12,21 +12,26 @@ namespace CommonInformation
         public string clientName;
     }
 
-    public struct Question
+    public struct PlayerInfo
     {
-        public string Title;
-    }
+        public string playerName;
+        public string playerStatus;
 
-    public struct Answer
-    {
-        public string Title;
-        public bool IsRight;
-    }
+        public int numberOfPlayedGames;
+        public int pointsNumber;
 
+        public int winsNumber;
+        public int drawsNumber;
+        public int losesNumber;
+        public int rightAnswersNumber;
+        public int wrongAnswersNumber;
+    }
+    
     public class Message
     {
-        public enum MessageType { Common, Private, History, JoinToChat, ClientsList, SearchRequest, SearchResponce, CheckConnection,
-        StartGameRequest, StartGameResponse, PlayerAnswer, OpponentRightAnswer, YourAnswerStatus, GameStatus, GameResults, LeftGame };
+        public enum MessageType { Common, Private, History, JoinToChat, SendGameTopics, ClientsList, SearchRequest, SearchResponce,
+        CheckConnection, StartGameRequest, StartGameResponse, PromptRequest, PromptResponse, PlayerAnswer, OpponentRightAnswer,
+        YourAnswerStatus, GameStatus, GameResults, LeftGame, GetStatistics, InterruptSearchingForOpponent };
 
         public int clientPort;
         public int serverPort;
@@ -38,6 +43,7 @@ namespace CommonInformation
         public string messageContent;
         public string messageName;
 
+        public bool isSelectedOpponentForGame;
         public string gameStartDetails;
         public bool mayStartGame;
         public string[] questionsToSend;
@@ -46,8 +52,18 @@ namespace CommonInformation
         public int answerNumber;
         public bool isCorrectAnswer;
         public string gameStatus;
+        public int gameTopic;
+
+        public bool is5050Prompt;
+        public int[] twoWrongAnswersFor5050Prompt;
+        public int[] probabilityOfAnswersCorrectness;
+
+        public PlayerInfo playerInfo;
+        public bool isfailedToGetStatistics;
 
         public List<ClientsInfo> clientsInfo;
+        public List<PlayerInfo> playerInfoList;
+        public List<string> GameTopics;
         public List<string> messageHistory;
 
         public DateTime messageTime;

@@ -15,36 +15,46 @@ namespace ServerSide
 {
     static class Server
     {
+        const string FileWithQuestionsOnAroundTheWorldTopic = "AroundTheWorld.txt";
+        const string FileWithQuestionsOnScienceGraniteTopic = "ScienceGranite.txt";
+        const string FileWithQuestionsOnTechnicalProgressTopic = "TechnicalProgress.txt";
+
         const int SERVERUDPPORT = 7744;
         const int SERVERTCPPORT = 7745;
         const int MAXNUMBEROFUSERS = 7;
-        public const int NumberOfQuestions = 10;
+        public const int NumberOfQuestionsInOneGame = 10;
+        public const int AllQuestionsInTopic = 20;
         public const int NumberOfAnswers = 4;
 
-        public static Question[] questions = new Question[NumberOfQuestions];
-        public static Answer[,] answers = new Answer[NumberOfQuestions, NumberOfAnswers];
-        public static int QuestionNumber = 0;
         public static List<Game> GamesList = new List<Game>();
-
+        public static Dictionary<int, PlayerInformation> playerInformationDictionary = new Dictionary<int, PlayerInformation>();
+        public static Dictionary<GameTopic, QuestionsForTopic> QuestionsDictionary = new Dictionary<GameTopic, QuestionsForTopic>();
 
         public static Dictionary<int, Socket> clientSockets = new Dictionary<int, Socket>();
         public static Dictionary<int, string> clientNames = new Dictionary<int, string>();
         public static List<string> MessageHistory = new List<string>();
 
+        public static List<int> waitingForRandomGamePlayers = new List<int>();
+
         static MessageSerializer messageSerializer = new MessageSerializer();
 
-        public static void GetQuestionsFromFile()
+        public static void GetQuestionsFromFile(string fileName, GameTopic gameTopic)
         {
-            using (StreamReader streamReader = new StreamReader("Questions.txt", Encoding.Default))
+            using (StreamReader streamReader = new StreamReader(fileName, Encoding.Default))
             {
-                for (int i = 0; i < NumberOfQuestions; i++)
+                var questionsForTopic = new QuestionsForTopic();
+                questionsForTopic.questions = new string[AllQuestionsInTopic];
+                questionsForTopic.answers = new Answer[AllQuestionsInTopic, NumberOfAnswers];
+
+                for (int i = 0; i < AllQuestionsInTopic; i++)
                 {
-                    questions[i].Title = streamReader.ReadLine();
-                    answers[i, 0].IsRight = true;
+                    questionsForTopic.questions[i] = streamReader.ReadLine();
+                    questionsForTopic.answers[i, i % NumberOfAnswers].IsRight = true;
 
                     for (int j = 0; j < NumberOfAnswers; j++)
-                        answers[i, j].Title = streamReader.ReadLine();
+                        questionsForTopic.answers[i, j].Title = streamReader.ReadLine();
                 }
+                QuestionsDictionary.Add(gameTopic, questionsForTopic);
             }
         }
 
@@ -93,7 +103,9 @@ namespace ServerSide
             Thread handleUDPThread = new Thread(SetUDPConnection);
             handleTCPThread.Start();
             handleUDPThread.Start();
-            GetQuestionsFromFile();
+            GetQuestionsFromFile(FileWithQuestionsOnAroundTheWorldTopic, GameTopic.AroundTheWorld);
+            GetQuestionsFromFile(FileWithQuestionsOnScienceGraniteTopic, GameTopic.ScienceGranite);
+            GetQuestionsFromFile(FileWithQuestionsOnTechnicalProgressTopic, GameTopic.TechnicalProgress);
         }
 
         public static void SendMessage(Message message, Socket clientSocket)
