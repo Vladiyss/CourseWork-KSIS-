@@ -11,12 +11,13 @@ namespace CommonInformation
 {
     public static class CommonInfo
     {
+        private const int BroadcastNumber = 255;
         public static IPAddress GetHostsBroadcastIPAddress()
         {
             IPHostEntry MyHost = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress IPaddress = MyHost.AddressList.FirstOrDefault(addr => addr.AddressFamily == AddressFamily.InterNetwork);
             byte[] IPaddressBytes = IPaddress.GetAddressBytes();
-            IPaddressBytes[IPaddressBytes.Length - 1] = 255;
+            IPaddressBytes[IPaddressBytes.Length - 1] = BroadcastNumber;
             IPAddress broadcastIPaddress = new IPAddress(IPaddressBytes);
 
             return broadcastIPaddress;
@@ -29,20 +30,5 @@ namespace CommonInformation
 
             return IPaddress;
         }
-
-        /*public static int RetrieveMessageType(string messageType)
-        {
-            int i = 1;
-            bool flag = true;
-            while ((i <= 7) && flag)
-            {
-                int result = String.Compare(Message.MessageType[i], messageType);
-                if (0 == result)
-                    flag = false;
-                else
-                    ++i;
-            }
-            return i;
-        }*/
     }
 }

@@ -16,7 +16,7 @@ namespace ServerSide
 
     class QuestionsForTopic
     {
-        public static Dictionary<GameTopic, string> TopicsDictionary = new Dictionary<GameTopic, string>()
+        public static Dictionary<GameTopic, string> topicsDictionary = new Dictionary<GameTopic, string>()
         {
             [GameTopic.AroundTheWorld] = "Вокруг света",
             [GameTopic.ScienceGranite] = "Гранит науки",

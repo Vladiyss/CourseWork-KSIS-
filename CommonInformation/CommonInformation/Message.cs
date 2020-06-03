@@ -38,16 +38,18 @@ namespace CommonInformation
         public int messageSenderID;
         public int messageReceiverID;
         public string IPAdress;
-
         public MessageType messageType;
         public string messageContent;
         public string messageName;
 
         public bool isSelectedOpponentForGame;
+        public string opponentForGameName;
         public string gameStartDetails;
         public bool mayStartGame;
+
         public string[] questionsToSend;
         public string[] answersToSend;
+
         public int answeredQuestionNumber;
         public int answerNumber;
         public bool isCorrectAnswer;
@@ -63,7 +65,7 @@ namespace CommonInformation
 
         public List<ClientsInfo> clientsInfo;
         public List<PlayerInfo> playerInfoList;
-        public List<string> GameTopics;
+        public List<string> gameTopics;
         public List<string> messageHistory;
 
         public DateTime messageTime;

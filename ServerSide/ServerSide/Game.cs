@@ -8,6 +8,8 @@ namespace ServerSide
 {
     class Game
     {
+        private const int StartNumber = 0;
+
         public int firstPlayerID;
         public int secondPlayerID;
 
@@ -36,11 +38,11 @@ namespace ServerSide
             this.firstPlayerName = firstPlayerName;
             this.secondPlayerName = secondPlayerName;
 
-            firstPlayerPoints = 0;
-            secondPlayerPoints = 0;
+            firstPlayerPoints = StartNumber;
+            secondPlayerPoints = StartNumber;
 
-            firstNumberAnsweredQuestions = 0;
-            secondNumberAnsweredQuestions = 0;
+            firstNumberAnsweredQuestions = StartNumber;
+            secondNumberAnsweredQuestions = StartNumber;
 
             isPlayedNow = true;
             isFirstFinished = false;

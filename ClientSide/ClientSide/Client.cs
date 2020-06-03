@@ -14,13 +14,13 @@ namespace ClientSide
 {
     public class Client
     {
-        public const int SERVERUDPPORT = 7744;
-        Socket socketToCommunicateWithServer;
-        Socket listeningUDPSocket;
+        private const int ServerUdpPort = 7744;
+        private const int MessageCapacity = 8192;
+        private Socket socketToCommunicateWithServer;
+        private Socket listeningUDPSocket;
 
         public bool isClientConnected = false;
         List<Thread> threadsList;
-
         MessageSerializer messageSerializer;
 
         public delegate void ReceivedMessagesHandler(Message message);
@@ -36,13 +36,13 @@ namespace ClientSide
         {
             listeningUDPSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             IPAddress IPaddress = CommonInfo.GetHostsIPAddress();
-            IPEndPoint IPLocalPoint = new IPEndPoint(IPaddress, SERVERUDPPORT);
+            IPEndPoint IPLocalPoint = new IPEndPoint(IPaddress, ServerUdpPort);
             listeningUDPSocket.Bind(IPLocalPoint);
 
-            var message = new Message(IPaddress.ToString(), SERVERUDPPORT, Message.MessageType.SearchRequest);
+            var message = new Message(IPaddress.ToString(), ServerUdpPort, Message.MessageType.SearchRequest);
 
             IPAddress broadcastIPaddress = CommonInfo.GetHostsBroadcastIPAddress();
-            IPEndPoint IPendPoint = new IPEndPoint(broadcastIPaddress, SERVERUDPPORT);
+            IPEndPoint IPendPoint = new IPEndPoint(broadcastIPaddress, ServerUdpPort);
             listeningUDPSocket.SendTo(messageSerializer.Serialize(message), IPendPoint);
 
             Thread threadReceiveUDPMessages = new Thread(ReceiveUDPMessages);
@@ -52,7 +52,7 @@ namespace ClientSide
 
         public void ReceiveUDPMessages()
         {
-            byte[] data = new byte[8192];
+            byte[] data = new byte[MessageCapacity];
             EndPoint remotePoint = new IPEndPoint(IPAddress.Any, 0);
             while (true)
             {
@@ -70,7 +70,7 @@ namespace ClientSide
 
         public void ReceiveAllMessages()
         {
-            byte[] data = new byte[8192];
+            byte[] data = new byte[MessageCapacity];
             int amount;
             do
             {
@@ -111,7 +111,9 @@ namespace ClientSide
                 return true;
             }
             else
+            {
                 return false;
+            }    
         }
 
         public bool Connect(IPEndPoint endPoint)

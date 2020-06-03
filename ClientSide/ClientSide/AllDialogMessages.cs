@@ -8,17 +8,17 @@ namespace ClientSide
 {
     class AllDialogsMessages
     {
-        public List<string> Messages;
-        public string Name;
+        public List<string> messages;
+        public string dialogName;
 
         public AllDialogsMessages(string name)
         {
-            Name = name;
-            Messages = new List<string>();
+            dialogName = name;
+            messages = new List<string>();
         }
         public void AddMessage(string messageContent)
         {
-            Messages.Add(messageContent);
+            messages.Add(messageContent);
         }
     }
 }

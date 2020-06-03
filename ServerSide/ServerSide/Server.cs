@@ -15,27 +15,28 @@ namespace ServerSide
 {
     static class Server
     {
-        const string FileWithQuestionsOnAroundTheWorldTopic = "AroundTheWorld.txt";
-        const string FileWithQuestionsOnScienceGraniteTopic = "ScienceGranite.txt";
-        const string FileWithQuestionsOnTechnicalProgressTopic = "TechnicalProgress.txt";
+        private const string FileWithQuestionsOnAroundTheWorldTopic = "AroundTheWorld.txt";
+        private const string FileWithQuestionsOnScienceGraniteTopic = "ScienceGranite.txt";
+        private const string FileWithQuestionsOnTechnicalProgressTopic = "TechnicalProgress.txt";
 
-        const int SERVERUDPPORT = 7744;
-        const int SERVERTCPPORT = 7745;
-        const int MAXNUMBEROFUSERS = 7;
+        private const int ServerUdpPort = 7744;
+        private const int ServerTcpPort = 7745;
+        private const int MaxNumberOfUsers = 7;
+        public const int MessageCapacity = 8192;
+
         public const int NumberOfQuestionsInOneGame = 10;
-        public const int AllQuestionsInTopic = 20;
+        public const int AllQuestionsInTopic = 40;
         public const int NumberOfAnswers = 4;
 
-        public static List<Game> GamesList = new List<Game>();
+        public static List<Game> gamesList = new List<Game>();
         public static Dictionary<int, PlayerInformation> playerInformationDictionary = new Dictionary<int, PlayerInformation>();
-        public static Dictionary<GameTopic, QuestionsForTopic> QuestionsDictionary = new Dictionary<GameTopic, QuestionsForTopic>();
+        public static Dictionary<GameTopic, QuestionsForTopic> questionsDictionary = new Dictionary<GameTopic, QuestionsForTopic>();
 
         public static Dictionary<int, Socket> clientSockets = new Dictionary<int, Socket>();
         public static Dictionary<int, string> clientNames = new Dictionary<int, string>();
-        public static List<string> MessageHistory = new List<string>();
+        public static List<string> messageHistory = new List<string>();
 
         public static List<int> waitingForRandomGamePlayers = new List<int>();
-
         static MessageSerializer messageSerializer = new MessageSerializer();
 
         public static void GetQuestionsFromFile(string fileName, GameTopic gameTopic)
@@ -54,17 +55,17 @@ namespace ServerSide
                     for (int j = 0; j < NumberOfAnswers; j++)
                         questionsForTopic.answers[i, j].Title = streamReader.ReadLine();
                 }
-                QuestionsDictionary.Add(gameTopic, questionsForTopic);
+                questionsDictionary.Add(gameTopic, questionsForTopic);
             }
         }
 
         public static void SetTCPConnection()
         {
             IPAddress IPaddress = CommonInfo.GetHostsIPAddress();
-            var IPendPoint = new IPEndPoint(IPaddress, SERVERTCPPORT);
+            var IPendPoint = new IPEndPoint(IPaddress, ServerTcpPort);
             var socketListener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socketListener.Bind(IPendPoint);
-            socketListener.Listen(MAXNUMBEROFUSERS);
+            socketListener.Listen(MaxNumberOfUsers);
             Console.WriteLine("TCP севрер готов!");
             while (true)
             {
@@ -75,13 +76,13 @@ namespace ServerSide
 
         public static void SetUDPConnection()
         {
-            var IPendPoint = new IPEndPoint(IPAddress.Any, SERVERUDPPORT);
+            var IPendPoint = new IPEndPoint(IPAddress.Any, ServerUdpPort);
             var socketListener = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             socketListener.Bind(IPendPoint);
             Console.WriteLine("UDP севрер готов!");
 
             EndPoint remotePoint = new IPEndPoint(IPAddress.Any, 0);
-            byte[] data = new byte[8192];
+            byte[] data = new byte[MessageCapacity];
             while (true)
             {
                 int amount = socketListener.ReceiveFrom(data, ref remotePoint);
@@ -89,7 +90,8 @@ namespace ServerSide
                 if (message.messageType == Message.MessageType.SearchRequest)
                 {
                     Message messageResponse = new Message()
-                    { IPAdress = CommonInfo.GetHostsIPAddress().ToString(), messageType = Message.MessageType.SearchResponce, serverPort = SERVERTCPPORT };
+                    { IPAdress = CommonInfo.GetHostsIPAddress().ToString(), messageType = Message.MessageType.SearchResponce,
+                    serverPort = ServerTcpPort };
                     var iPaddress = IPAddress.Parse(message.IPAdress);
                     IPEndPoint remoteEndPoint = new IPEndPoint(iPaddress, message.clientPort);
                     socketListener.SendTo(messageSerializer.Serialize(messageResponse), remoteEndPoint);

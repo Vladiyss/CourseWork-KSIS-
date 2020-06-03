@@ -48,6 +48,10 @@
             this.buttonPlay = new System.Windows.Forms.Button();
             this.buttonSendMessage = new System.Windows.Forms.Button();
             this.panelGame = new System.Windows.Forms.Panel();
+            this.labelAllNumberOfQuestions = new System.Windows.Forms.Label();
+            this.labelCurrentQuestionNumber = new System.Windows.Forms.Label();
+            this.labelQues = new System.Windows.Forms.Label();
+            this.richTextBoxQuestion = new System.Windows.Forms.RichTextBox();
             this.buttonHallPrompt = new System.Windows.Forms.Button();
             this.button5050Prompt = new System.Windows.Forms.Button();
             this.labelAnswerStatus = new System.Windows.Forms.Label();
@@ -60,13 +64,11 @@
             this.labelAnswerC = new System.Windows.Forms.Label();
             this.labelAnswerB = new System.Windows.Forms.Label();
             this.labelAnswerA = new System.Windows.Forms.Label();
-            this.labelQuestion = new System.Windows.Forms.Label();
             this.labelOpponentPointsNumber = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.labelYourPointsNumber = new System.Windows.Forms.Label();
             this.labelOpponent = new System.Windows.Forms.Label();
             this.labelYou = new System.Windows.Forms.Label();
-            this.labelGameStatus = new System.Windows.Forms.Label();
             this.buttonAcceptGame = new System.Windows.Forms.Button();
             this.buttonRejectGame = new System.Windows.Forms.Button();
             this.buttonShowStatistics = new System.Windows.Forms.Button();
@@ -83,25 +85,15 @@
             this.comboBoxGameTopics = new System.Windows.Forms.ComboBox();
             this.labelSelectTopic = new System.Windows.Forms.Label();
             this.labelTopicIsNotSelected = new System.Windows.Forms.Label();
-            this.panelHallPrompt = new System.Windows.Forms.Panel();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.labelProbabilityAAnswer = new System.Windows.Forms.Label();
-            this.labelProbabilityBAnswer = new System.Windows.Forms.Label();
-            this.labelProbabilityCAnswer = new System.Windows.Forms.Label();
-            this.labelProbabilityDAnswer = new System.Windows.Forms.Label();
             this.buttonPlayWithRandomPlayer = new System.Windows.Forms.Button();
             this.labelWaitingForOpponent = new System.Windows.Forms.Label();
             this.buttonInterruptWaitingForOpponent = new System.Windows.Forms.Button();
+            this.buttonHideStatistics = new System.Windows.Forms.Button();
+            this.richTextBoxGameStatus = new System.Windows.Forms.RichTextBox();
+            this.labelPutYourName = new System.Windows.Forms.Label();
+            this.labelPutMessage = new System.Windows.Forms.Label();
             this.panelGame.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewStatistics)).BeginInit();
-            this.panelHallPrompt.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonFindServer
@@ -164,7 +156,7 @@
             // 
             // buttonConnectToServer
             // 
-            this.buttonConnectToServer.Location = new System.Drawing.Point(12, 145);
+            this.buttonConnectToServer.Location = new System.Drawing.Point(12, 170);
             this.buttonConnectToServer.Name = "buttonConnectToServer";
             this.buttonConnectToServer.Size = new System.Drawing.Size(118, 25);
             this.buttonConnectToServer.TabIndex = 7;
@@ -174,7 +166,7 @@
             // 
             // buttonDisconnect
             // 
-            this.buttonDisconnect.Location = new System.Drawing.Point(140, 145);
+            this.buttonDisconnect.Location = new System.Drawing.Point(140, 170);
             this.buttonDisconnect.Name = "buttonDisconnect";
             this.buttonDisconnect.Size = new System.Drawing.Size(115, 25);
             this.buttonDisconnect.TabIndex = 8;
@@ -185,7 +177,7 @@
             // labelDisplayConnection
             // 
             this.labelDisplayConnection.AutoSize = true;
-            this.labelDisplayConnection.Location = new System.Drawing.Point(88, 185);
+            this.labelDisplayConnection.Location = new System.Drawing.Point(88, 200);
             this.labelDisplayConnection.Name = "labelDisplayConnection";
             this.labelDisplayConnection.Size = new System.Drawing.Size(23, 17);
             this.labelDisplayConnection.TabIndex = 9;
@@ -193,7 +185,7 @@
             // 
             // buttonShowHistory
             // 
-            this.buttonShowHistory.Location = new System.Drawing.Point(15, 219);
+            this.buttonShowHistory.Location = new System.Drawing.Point(15, 224);
             this.buttonShowHistory.Name = "buttonShowHistory";
             this.buttonShowHistory.Size = new System.Drawing.Size(240, 23);
             this.buttonShowHistory.TabIndex = 10;
@@ -248,6 +240,7 @@
             // 
             // richTextBoxMessageContent
             // 
+            this.richTextBoxMessageContent.BackColor = System.Drawing.SystemColors.Window;
             this.richTextBoxMessageContent.Location = new System.Drawing.Point(291, 354);
             this.richTextBoxMessageContent.Name = "richTextBoxMessageContent";
             this.richTextBoxMessageContent.Size = new System.Drawing.Size(248, 26);
@@ -256,7 +249,7 @@
             // 
             // buttonPlay
             // 
-            this.buttonPlay.Location = new System.Drawing.Point(590, 53);
+            this.buttonPlay.Location = new System.Drawing.Point(586, 53);
             this.buttonPlay.Name = "buttonPlay";
             this.buttonPlay.Size = new System.Drawing.Size(86, 27);
             this.buttonPlay.TabIndex = 17;
@@ -277,7 +270,10 @@
             // 
             // panelGame
             // 
-            this.panelGame.Controls.Add(this.panelHallPrompt);
+            this.panelGame.Controls.Add(this.labelAllNumberOfQuestions);
+            this.panelGame.Controls.Add(this.labelCurrentQuestionNumber);
+            this.panelGame.Controls.Add(this.labelQues);
+            this.panelGame.Controls.Add(this.richTextBoxQuestion);
             this.panelGame.Controls.Add(this.buttonHallPrompt);
             this.panelGame.Controls.Add(this.button5050Prompt);
             this.panelGame.Controls.Add(this.labelAnswerStatus);
@@ -290,7 +286,6 @@
             this.panelGame.Controls.Add(this.labelAnswerC);
             this.panelGame.Controls.Add(this.labelAnswerB);
             this.panelGame.Controls.Add(this.labelAnswerA);
-            this.panelGame.Controls.Add(this.labelQuestion);
             this.panelGame.Controls.Add(this.labelOpponentPointsNumber);
             this.panelGame.Controls.Add(this.label8);
             this.panelGame.Controls.Add(this.labelYourPointsNumber);
@@ -298,15 +293,52 @@
             this.panelGame.Controls.Add(this.labelYou);
             this.panelGame.Location = new System.Drawing.Point(698, 4);
             this.panelGame.Name = "panelGame";
-            this.panelGame.Size = new System.Drawing.Size(463, 356);
+            this.panelGame.Size = new System.Drawing.Size(353, 351);
             this.panelGame.TabIndex = 19;
             this.panelGame.Visible = false;
+            // 
+            // labelAllNumberOfQuestions
+            // 
+            this.labelAllNumberOfQuestions.AutoSize = true;
+            this.labelAllNumberOfQuestions.Location = new System.Drawing.Point(95, 323);
+            this.labelAllNumberOfQuestions.Name = "labelAllNumberOfQuestions";
+            this.labelAllNumberOfQuestions.Size = new System.Drawing.Size(28, 17);
+            this.labelAllNumberOfQuestions.TabIndex = 22;
+            this.labelAllNumberOfQuestions.Text = "/10";
+            // 
+            // labelCurrentQuestionNumber
+            // 
+            this.labelCurrentQuestionNumber.AutoSize = true;
+            this.labelCurrentQuestionNumber.Location = new System.Drawing.Point(74, 323);
+            this.labelCurrentQuestionNumber.Name = "labelCurrentQuestionNumber";
+            this.labelCurrentQuestionNumber.Size = new System.Drawing.Size(23, 17);
+            this.labelCurrentQuestionNumber.TabIndex = 21;
+            this.labelCurrentQuestionNumber.Text = "---";
+            // 
+            // labelQues
+            // 
+            this.labelQues.AutoSize = true;
+            this.labelQues.Location = new System.Drawing.Point(5, 323);
+            this.labelQues.Name = "labelQues";
+            this.labelQues.Size = new System.Drawing.Size(66, 17);
+            this.labelQues.TabIndex = 20;
+            this.labelQues.Text = "Вопросы";
+            // 
+            // richTextBoxQuestion
+            // 
+            this.richTextBoxQuestion.BackColor = System.Drawing.SystemColors.Control;
+            this.richTextBoxQuestion.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBoxQuestion.Location = new System.Drawing.Point(3, 49);
+            this.richTextBoxQuestion.Name = "richTextBoxQuestion";
+            this.richTextBoxQuestion.Size = new System.Drawing.Size(332, 35);
+            this.richTextBoxQuestion.TabIndex = 19;
+            this.richTextBoxQuestion.Text = "";
             // 
             // buttonHallPrompt
             // 
             this.buttonHallPrompt.Location = new System.Drawing.Point(274, 225);
             this.buttonHallPrompt.Name = "buttonHallPrompt";
-            this.buttonHallPrompt.Size = new System.Drawing.Size(52, 30);
+            this.buttonHallPrompt.Size = new System.Drawing.Size(61, 30);
             this.buttonHallPrompt.TabIndex = 17;
             this.buttonHallPrompt.Text = "Зал";
             this.buttonHallPrompt.UseVisualStyleBackColor = true;
@@ -316,7 +348,7 @@
             // 
             this.button5050Prompt.Location = new System.Drawing.Point(274, 189);
             this.button5050Prompt.Name = "button5050Prompt";
-            this.button5050Prompt.Size = new System.Drawing.Size(52, 30);
+            this.button5050Prompt.Size = new System.Drawing.Size(61, 30);
             this.button5050Prompt.TabIndex = 16;
             this.button5050Prompt.Text = "50/50";
             this.button5050Prompt.UseVisualStyleBackColor = true;
@@ -325,7 +357,7 @@
             // labelAnswerStatus
             // 
             this.labelAnswerStatus.AutoSize = true;
-            this.labelAnswerStatus.Location = new System.Drawing.Point(3, 332);
+            this.labelAnswerStatus.Location = new System.Drawing.Point(3, 300);
             this.labelAnswerStatus.Name = "labelAnswerStatus";
             this.labelAnswerStatus.Size = new System.Drawing.Size(23, 17);
             this.labelAnswerStatus.TabIndex = 15;
@@ -373,6 +405,7 @@
             // 
             // buttonAnswerA
             // 
+            this.buttonAnswerA.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.buttonAnswerA.Location = new System.Drawing.Point(6, 189);
             this.buttonAnswerA.Name = "buttonAnswerA";
             this.buttonAnswerA.Size = new System.Drawing.Size(120, 30);
@@ -416,15 +449,6 @@
             this.labelAnswerA.Size = new System.Drawing.Size(23, 17);
             this.labelAnswerA.TabIndex = 6;
             this.labelAnswerA.Text = "---";
-            // 
-            // labelQuestion
-            // 
-            this.labelQuestion.AutoSize = true;
-            this.labelQuestion.Location = new System.Drawing.Point(3, 57);
-            this.labelQuestion.Name = "labelQuestion";
-            this.labelQuestion.Size = new System.Drawing.Size(23, 17);
-            this.labelQuestion.TabIndex = 5;
-            this.labelQuestion.Text = "---";
             // 
             // labelOpponentPointsNumber
             // 
@@ -471,18 +495,9 @@
             this.labelYou.TabIndex = 0;
             this.labelYou.Text = "ВЫ";
             // 
-            // labelGameStatus
-            // 
-            this.labelGameStatus.AutoSize = true;
-            this.labelGameStatus.Location = new System.Drawing.Point(291, 383);
-            this.labelGameStatus.Name = "labelGameStatus";
-            this.labelGameStatus.Size = new System.Drawing.Size(23, 17);
-            this.labelGameStatus.TabIndex = 20;
-            this.labelGameStatus.Text = "---";
-            // 
             // buttonAcceptGame
             // 
-            this.buttonAcceptGame.Location = new System.Drawing.Point(289, 414);
+            this.buttonAcceptGame.Location = new System.Drawing.Point(289, 432);
             this.buttonAcceptGame.Name = "buttonAcceptGame";
             this.buttonAcceptGame.Size = new System.Drawing.Size(104, 27);
             this.buttonAcceptGame.TabIndex = 21;
@@ -493,7 +508,7 @@
             // 
             // buttonRejectGame
             // 
-            this.buttonRejectGame.Location = new System.Drawing.Point(428, 414);
+            this.buttonRejectGame.Location = new System.Drawing.Point(405, 432);
             this.buttonRejectGame.Name = "buttonRejectGame";
             this.buttonRejectGame.Size = new System.Drawing.Size(97, 27);
             this.buttonRejectGame.TabIndex = 22;
@@ -514,9 +529,9 @@
             // 
             // richTextBoxStatistics
             // 
-            this.richTextBoxStatistics.Location = new System.Drawing.Point(12, 362);
+            this.richTextBoxStatistics.Location = new System.Drawing.Point(10, 389);
             this.richTextBoxStatistics.Name = "richTextBoxStatistics";
-            this.richTextBoxStatistics.Size = new System.Drawing.Size(273, 110);
+            this.richTextBoxStatistics.Size = new System.Drawing.Size(260, 95);
             this.richTextBoxStatistics.TabIndex = 24;
             this.richTextBoxStatistics.Text = "";
             this.richTextBoxStatistics.Visible = false;
@@ -526,6 +541,8 @@
             this.dataGridViewStatistics.AllowUserToAddRows = false;
             this.dataGridViewStatistics.AllowUserToDeleteRows = false;
             this.dataGridViewStatistics.AllowUserToResizeRows = false;
+            this.dataGridViewStatistics.BackgroundColor = System.Drawing.SystemColors.Control;
+            this.dataGridViewStatistics.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridViewStatistics.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewStatistics.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.playerName,
@@ -536,10 +553,12 @@
             this.RightAnswer,
             this.WrongAnswer,
             this.Points});
-            this.dataGridViewStatistics.Location = new System.Drawing.Point(641, 400);
+            this.dataGridViewStatistics.Location = new System.Drawing.Point(508, 432);
             this.dataGridViewStatistics.Name = "dataGridViewStatistics";
+            this.dataGridViewStatistics.ReadOnly = true;
+            this.dataGridViewStatistics.RowHeadersVisible = false;
             this.dataGridViewStatistics.RowTemplate.Height = 24;
-            this.dataGridViewStatistics.Size = new System.Drawing.Size(520, 150);
+            this.dataGridViewStatistics.Size = new System.Drawing.Size(653, 132);
             this.dataGridViewStatistics.TabIndex = 25;
             this.dataGridViewStatistics.Visible = false;
             // 
@@ -547,48 +566,56 @@
             // 
             this.playerName.HeaderText = "Имя игрока";
             this.playerName.Name = "playerName";
+            this.playerName.ReadOnly = true;
             this.playerName.Width = 150;
             // 
             // Games
             // 
             this.Games.HeaderText = "Игры";
             this.Games.Name = "Games";
+            this.Games.ReadOnly = true;
             this.Games.Width = 50;
             // 
             // Wins
             // 
             this.Wins.HeaderText = "П";
             this.Wins.Name = "Wins";
+            this.Wins.ReadOnly = true;
             this.Wins.Width = 25;
             // 
             // Draws
             // 
             this.Draws.HeaderText = "Н";
             this.Draws.Name = "Draws";
+            this.Draws.ReadOnly = true;
             this.Draws.Width = 25;
             // 
             // Loses
             // 
             this.Loses.HeaderText = "П";
             this.Loses.Name = "Loses";
+            this.Loses.ReadOnly = true;
             this.Loses.Width = 25;
             // 
             // RightAnswer
             // 
             this.RightAnswer.HeaderText = "Верно";
             this.RightAnswer.Name = "RightAnswer";
+            this.RightAnswer.ReadOnly = true;
             this.RightAnswer.Width = 75;
             // 
             // WrongAnswer
             // 
             this.WrongAnswer.HeaderText = "Неверно";
             this.WrongAnswer.Name = "WrongAnswer";
+            this.WrongAnswer.ReadOnly = true;
             this.WrongAnswer.Width = 75;
             // 
             // Points
             // 
             this.Points.HeaderText = "Очки";
             this.Points.Name = "Points";
+            this.Points.ReadOnly = true;
             this.Points.Width = 50;
             // 
             // comboBoxGameTopics
@@ -621,134 +648,6 @@
             this.labelTopicIsNotSelected.Text = "Тема не выбрана!";
             this.labelTopicIsNotSelected.Visible = false;
             // 
-            // panelHallPrompt
-            // 
-            this.panelHallPrompt.Controls.Add(this.labelProbabilityDAnswer);
-            this.panelHallPrompt.Controls.Add(this.labelProbabilityCAnswer);
-            this.panelHallPrompt.Controls.Add(this.labelProbabilityBAnswer);
-            this.panelHallPrompt.Controls.Add(this.labelProbabilityAAnswer);
-            this.panelHallPrompt.Controls.Add(this.label13);
-            this.panelHallPrompt.Controls.Add(this.label12);
-            this.panelHallPrompt.Controls.Add(this.label11);
-            this.panelHallPrompt.Controls.Add(this.label10);
-            this.panelHallPrompt.Controls.Add(this.label9);
-            this.panelHallPrompt.Controls.Add(this.label7);
-            this.panelHallPrompt.Controls.Add(this.label6);
-            this.panelHallPrompt.Controls.Add(this.label5);
-            this.panelHallPrompt.Location = new System.Drawing.Point(6, 298);
-            this.panelHallPrompt.Name = "panelHallPrompt";
-            this.panelHallPrompt.Size = new System.Drawing.Size(252, 31);
-            this.panelHallPrompt.TabIndex = 18;
-            this.panelHallPrompt.Visible = false;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 7);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(21, 17);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "A:";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(65, 7);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(21, 17);
-            this.label6.TabIndex = 1;
-            this.label6.Text = "B:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(127, 7);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(21, 17);
-            this.label7.TabIndex = 2;
-            this.label7.Text = "C:";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(189, 7);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(22, 17);
-            this.label9.TabIndex = 3;
-            this.label9.Text = "D:";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(47, 7);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(20, 17);
-            this.label10.TabIndex = 4;
-            this.label10.Text = "%";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(107, 7);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(20, 17);
-            this.label11.TabIndex = 5;
-            this.label11.Text = "%";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(168, 7);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(20, 17);
-            this.label12.TabIndex = 6;
-            this.label12.Text = "%";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(229, 7);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(20, 17);
-            this.label13.TabIndex = 7;
-            this.label13.Text = "%";
-            // 
-            // labelProbabilityAAnswer
-            // 
-            this.labelProbabilityAAnswer.AutoSize = true;
-            this.labelProbabilityAAnswer.Location = new System.Drawing.Point(22, 7);
-            this.labelProbabilityAAnswer.Name = "labelProbabilityAAnswer";
-            this.labelProbabilityAAnswer.Size = new System.Drawing.Size(23, 17);
-            this.labelProbabilityAAnswer.TabIndex = 8;
-            this.labelProbabilityAAnswer.Text = "---";
-            // 
-            // labelProbabilityBAnswer
-            // 
-            this.labelProbabilityBAnswer.AutoSize = true;
-            this.labelProbabilityBAnswer.Location = new System.Drawing.Point(84, 7);
-            this.labelProbabilityBAnswer.Name = "labelProbabilityBAnswer";
-            this.labelProbabilityBAnswer.Size = new System.Drawing.Size(23, 17);
-            this.labelProbabilityBAnswer.TabIndex = 9;
-            this.labelProbabilityBAnswer.Text = "---";
-            // 
-            // labelProbabilityCAnswer
-            // 
-            this.labelProbabilityCAnswer.AutoSize = true;
-            this.labelProbabilityCAnswer.Location = new System.Drawing.Point(146, 7);
-            this.labelProbabilityCAnswer.Name = "labelProbabilityCAnswer";
-            this.labelProbabilityCAnswer.Size = new System.Drawing.Size(23, 17);
-            this.labelProbabilityCAnswer.TabIndex = 10;
-            this.labelProbabilityCAnswer.Text = "---";
-            // 
-            // labelProbabilityDAnswer
-            // 
-            this.labelProbabilityDAnswer.AutoSize = true;
-            this.labelProbabilityDAnswer.Location = new System.Drawing.Point(207, 7);
-            this.labelProbabilityDAnswer.Name = "labelProbabilityDAnswer";
-            this.labelProbabilityDAnswer.Size = new System.Drawing.Size(23, 17);
-            this.labelProbabilityDAnswer.TabIndex = 11;
-            this.labelProbabilityDAnswer.Text = "---";
-            // 
             // buttonPlayWithRandomPlayer
             // 
             this.buttonPlayWithRandomPlayer.Location = new System.Drawing.Point(392, 113);
@@ -771,20 +670,64 @@
             // 
             // buttonInterruptWaitingForOpponent
             // 
-            this.buttonInterruptWaitingForOpponent.Location = new System.Drawing.Point(590, 113);
+            this.buttonInterruptWaitingForOpponent.Location = new System.Drawing.Point(582, 113);
             this.buttonInterruptWaitingForOpponent.Name = "buttonInterruptWaitingForOpponent";
-            this.buttonInterruptWaitingForOpponent.Size = new System.Drawing.Size(81, 25);
+            this.buttonInterruptWaitingForOpponent.Size = new System.Drawing.Size(89, 25);
             this.buttonInterruptWaitingForOpponent.TabIndex = 31;
             this.buttonInterruptWaitingForOpponent.Text = "Прервать";
             this.buttonInterruptWaitingForOpponent.UseVisualStyleBackColor = true;
             this.buttonInterruptWaitingForOpponent.Visible = false;
             this.buttonInterruptWaitingForOpponent.Click += new System.EventHandler(this.buttonInterruptWaitingForOpponent_Click);
             // 
+            // buttonHideStatistics
+            // 
+            this.buttonHideStatistics.Location = new System.Drawing.Point(15, 351);
+            this.buttonHideStatistics.Name = "buttonHideStatistics";
+            this.buttonHideStatistics.Size = new System.Drawing.Size(240, 25);
+            this.buttonHideStatistics.TabIndex = 32;
+            this.buttonHideStatistics.Text = "Скрыть статистику";
+            this.buttonHideStatistics.UseVisualStyleBackColor = true;
+            this.buttonHideStatistics.Click += new System.EventHandler(this.buttonHideStatistics_Click);
+            // 
+            // richTextBoxGameStatus
+            // 
+            this.richTextBoxGameStatus.BackColor = System.Drawing.SystemColors.Control;
+            this.richTextBoxGameStatus.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBoxGameStatus.Location = new System.Drawing.Point(291, 386);
+            this.richTextBoxGameStatus.Name = "richTextBoxGameStatus";
+            this.richTextBoxGameStatus.Size = new System.Drawing.Size(344, 40);
+            this.richTextBoxGameStatus.TabIndex = 33;
+            this.richTextBoxGameStatus.Text = "";
+            // 
+            // labelPutYourName
+            // 
+            this.labelPutYourName.AutoSize = true;
+            this.labelPutYourName.Location = new System.Drawing.Point(156, 144);
+            this.labelPutYourName.Name = "labelPutYourName";
+            this.labelPutYourName.Size = new System.Drawing.Size(95, 17);
+            this.labelPutYourName.TabIndex = 34;
+            this.labelPutYourName.Text = "Введите имя!";
+            this.labelPutYourName.Visible = false;
+            // 
+            // labelPutMessage
+            // 
+            this.labelPutMessage.AutoSize = true;
+            this.labelPutMessage.Location = new System.Drawing.Point(681, 358);
+            this.labelPutMessage.Name = "labelPutMessage";
+            this.labelPutMessage.Size = new System.Drawing.Size(144, 17);
+            this.labelPutMessage.TabIndex = 35;
+            this.labelPutMessage.Text = "Введите сообщение!";
+            this.labelPutMessage.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1173, 587);
+            this.Controls.Add(this.labelPutMessage);
+            this.Controls.Add(this.labelPutYourName);
+            this.Controls.Add(this.richTextBoxGameStatus);
+            this.Controls.Add(this.buttonHideStatistics);
             this.Controls.Add(this.buttonInterruptWaitingForOpponent);
             this.Controls.Add(this.labelWaitingForOpponent);
             this.Controls.Add(this.buttonPlayWithRandomPlayer);
@@ -796,7 +739,6 @@
             this.Controls.Add(this.buttonShowStatistics);
             this.Controls.Add(this.buttonRejectGame);
             this.Controls.Add(this.buttonAcceptGame);
-            this.Controls.Add(this.labelGameStatus);
             this.Controls.Add(this.panelGame);
             this.Controls.Add(this.buttonSendMessage);
             this.Controls.Add(this.buttonPlay);
@@ -822,8 +764,6 @@
             this.panelGame.ResumeLayout(false);
             this.panelGame.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewStatistics)).EndInit();
-            this.panelHallPrompt.ResumeLayout(false);
-            this.panelHallPrompt.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -865,9 +805,7 @@
         private System.Windows.Forms.Label labelAnswerC;
         private System.Windows.Forms.Label labelAnswerB;
         private System.Windows.Forms.Label labelAnswerA;
-        private System.Windows.Forms.Label labelQuestion;
         private System.Windows.Forms.Label labelAnswerStatus;
-        private System.Windows.Forms.Label labelGameStatus;
         private System.Windows.Forms.Button buttonAcceptGame;
         private System.Windows.Forms.Button buttonRejectGame;
         private System.Windows.Forms.Button buttonShowStatistics;
@@ -886,22 +824,17 @@
         private System.Windows.Forms.Label labelTopicIsNotSelected;
         private System.Windows.Forms.Button buttonHallPrompt;
         private System.Windows.Forms.Button button5050Prompt;
-        private System.Windows.Forms.Panel panelHallPrompt;
-        private System.Windows.Forms.Label labelProbabilityDAnswer;
-        private System.Windows.Forms.Label labelProbabilityCAnswer;
-        private System.Windows.Forms.Label labelProbabilityBAnswer;
-        private System.Windows.Forms.Label labelProbabilityAAnswer;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button buttonPlayWithRandomPlayer;
         private System.Windows.Forms.Label labelWaitingForOpponent;
         private System.Windows.Forms.Button buttonInterruptWaitingForOpponent;
+        private System.Windows.Forms.RichTextBox richTextBoxQuestion;
+        private System.Windows.Forms.Button buttonHideStatistics;
+        private System.Windows.Forms.RichTextBox richTextBoxGameStatus;
+        private System.Windows.Forms.Label labelPutYourName;
+        private System.Windows.Forms.Label labelPutMessage;
+        private System.Windows.Forms.Label labelAllNumberOfQuestions;
+        private System.Windows.Forms.Label labelCurrentQuestionNumber;
+        private System.Windows.Forms.Label labelQues;
     }
 }
 

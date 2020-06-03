@@ -8,6 +8,10 @@ namespace ServerSide
 {
     class PlayerInformation
     {
+        private const int FirstPointsBoundary = 5;
+        private const int SecondPointsBoundary = 10;
+        private const int StartNumber = 0;
+
         public enum StatusType { Beginner, Specialist, Master };
 
         public string playerName;
@@ -27,9 +31,9 @@ namespace ServerSide
             playerName = name;
             playerStatus = StatusType.Beginner;
             numberOfPlayedGames = 1;
-            winsNumber = 0;
-            drawsNumber = 0;
-            losesNumber = 0;
+            winsNumber = StartNumber;
+            drawsNumber = StartNumber;
+            losesNumber = StartNumber;
 
             rightAnswersNumber = rightAnswers;
             wrongAnswersNumber = wrongAnswers;
@@ -38,16 +42,18 @@ namespace ServerSide
         public StatusType DefineStatus()
         {
             StatusType currentStatus;
-            if ((winsNumber - losesNumber > 1) && (pointsNumber > 10))
+            if ((winsNumber - losesNumber > 1) && (pointsNumber > SecondPointsBoundary))
             {
                 currentStatus = StatusType.Master;
             }
-            else if ((winsNumber >= losesNumber) && (pointsNumber > 5))
+            else if ((winsNumber >= losesNumber) && (pointsNumber > FirstPointsBoundary))
             {
                 currentStatus = StatusType.Specialist;
             }
             else
+            {
                 currentStatus = StatusType.Beginner;
+            }     
             return currentStatus;
         }
     }

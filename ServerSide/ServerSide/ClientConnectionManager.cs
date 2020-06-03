@@ -13,21 +13,32 @@ namespace ServerSide
 {
     class ClientConnectionManager
     {
-        Socket listeningClientMessagesSocket;
-        Thread handleClientThread;
+        private const int Timeout = 700;
+        private const int TopicsNumber = 3;
+        private const int StartNumber = 0;
+        private const int BoundaryOfLightQuestions = 5;
+        private const int BoundaryOfMediumQuestions = 8;
+        private const int MaxProbability = 100;
+        private readonly int[] Probabilities = new int[6] { 20, 25, 30, 40, 50, 70 };
 
+        private const string JoinChat = " присоединился к беседе";
+        private const string LeftChat = " покинул беседу";
+        private const string WaitingForOpponent = "Ожидайте оппонента...";
+
+        private Socket listeningClientMessagesSocket;
+        private Thread handleClientThread;
+        private MessageSerializer messageSerializer;
         public bool isConnected;
-        MessageSerializer messageSerializer;
-
-        int[] randomNumbersOfQuestions = new int[Server.NumberOfQuestionsInOneGame]; 
+        
+        private int[] randomNumbersOfQuestions = new int[Server.NumberOfQuestionsInOneGame]; 
 
         public ClientConnectionManager(Socket listeningClientMessagesSocket)
         {
             messageSerializer = new MessageSerializer();
             isConnected = true;
             this.listeningClientMessagesSocket = listeningClientMessagesSocket;
-            listeningClientMessagesSocket.ReceiveTimeout = 700;
-            listeningClientMessagesSocket.SendTimeout = 700;
+            listeningClientMessagesSocket.ReceiveTimeout = Timeout;
+            listeningClientMessagesSocket.SendTimeout = Timeout;
             Server.clientSockets.Add(listeningClientMessagesSocket.RemoteEndPoint.GetHashCode(), listeningClientMessagesSocket);
             handleClientThread = new Thread(ListeningClient);
             handleClientThread.Start();
@@ -41,7 +52,7 @@ namespace ServerSide
 
         public void ReceiveClientMessages()
         {
-            byte[] data = new byte[8192];
+            byte[] data = new byte[Server.MessageCapacity];
             int amount;
             do
             {
@@ -51,7 +62,6 @@ namespace ServerSide
                     do
                     {
                         amount = listeningClientMessagesSocket.Receive(data);
-                        Console.WriteLine(amount);
                         messageContainer.Write(data, 0, amount);
                     } while (listeningClientMessagesSocket.Available > 0);
                     Message recievedMessage = messageSerializer.Deserialize(messageContainer.GetBuffer(),
@@ -68,7 +78,7 @@ namespace ServerSide
             } while (isConnected);
         }
 
-        void DefineMessageType(Message message)
+        private void DefineMessageType(Message message)
         {
             message.messageTime = DateTime.Now;
             message.IPAdress = ((IPEndPoint)listeningClientMessagesSocket.RemoteEndPoint).Address.ToString();
@@ -110,15 +120,16 @@ namespace ServerSide
             }
         }
 
-        void ProcessCommonMessage(Message message)
+        private void ProcessCommonMessage(Message message)
         {
             message.messageName = Server.clientNames[listeningClientMessagesSocket.RemoteEndPoint.GetHashCode()];
             Console.WriteLine(message.messageName + " : " + message.messageContent);
             Server.SendToAll(message);
-            Server.MessageHistory.Add(message.messageTime.ToString() + " - " + message.IPAdress + " - " + message.messageName + " : " + message.messageContent);
+            Server.messageHistory.Add(message.messageTime.ToString() + " - " + message.IPAdress + " - "
+            + message.messageName + " : " + message.messageContent);
         }
 
-        void ProcessPrivateMessage(Message message)
+        private void ProcessPrivateMessage(Message message)
         {
             message.messageName = Server.clientNames[listeningClientMessagesSocket.RemoteEndPoint.GetHashCode()];
             if (Server.clientSockets.ContainsKey(message.messageReceiverID))
@@ -132,38 +143,40 @@ namespace ServerSide
             }
         }
 
-        void ProcessHistoryRequestMessage(Message message)
+        private void ProcessHistoryRequestMessage(Message message)
         {
-            Message responseMessage = new Message() { messageHistory = Server.MessageHistory, messageType = Message.MessageType.History };
+            Message responseMessage = new Message() { messageHistory = Server.messageHistory, messageType = Message.MessageType.History };
             Server.SendMessage(responseMessage, listeningClientMessagesSocket);
         }
 
-        void ProcessJoinToChatMessage(Message message)
+        private void ProcessJoinToChatMessage(Message message)
         {
             Server.clientNames.Add(listeningClientMessagesSocket.RemoteEndPoint.GetHashCode(), message.messageName);
-            Console.WriteLine(message.messageName + " присоединился к беседе");
+            Console.WriteLine(message.messageName + JoinChat);
 
             var responseTopicsMessage = new Message()
-            { messageType = Message.MessageType.SendGameTopics, GameTopics = GetGameTopics() };
+            { messageType = Message.MessageType.SendGameTopics, gameTopics = GetGameTopics() };
             Server.SendMessage(responseTopicsMessage, listeningClientMessagesSocket);
 
             List<ClientsInfo> info = GetClientsList();
             Server.SendToAll(new Message(info));
-            Server.SendToAll(new Message(message.messageName, " присоединился к беседе", Message.MessageType.Common));
+            Server.SendToAll(new Message(message.messageName, JoinChat, Message.MessageType.Common));
         }
 
-        bool isOpponentPlaying(int opponentID)
+        private bool isOpponentPlaying(int opponentID)
         {
             bool flag = false;
-            foreach(Game game in Server.GamesList)
+            foreach(Game game in Server.gamesList)
             {
                 if (((game.firstPlayerID == opponentID) || (game.secondPlayerID == opponentID)) && game.isPlayedNow)
+                {
                     flag = true;
+                }      
             }
             return flag;
-        } 
+        }
 
-        void ProcessStartGameRequestMessage(Message message)
+        private void ProcessStartGameRequestMessage(Message message)
         {
             if (message.isSelectedOpponentForGame)
             {
@@ -188,46 +201,43 @@ namespace ServerSide
                         if (Server.clientSockets.ContainsKey(message.messageReceiverID))
                         {
                             message.messageSenderID = listeningClientMessagesSocket.RemoteEndPoint.GetHashCode();
-                            Console.WriteLine(message.messageSenderID);
-                            Console.WriteLine(message.messageReceiverID);
                             Server.SendMessage(message, Server.clientSockets[message.messageReceiverID]);
                         }
                         else
                         {
                             Console.WriteLine("Failed to send start game message");
                         }
-
                     }
                 }
             }
             else
             {
-                if (Server.waitingForRandomGamePlayers.Count == 0)
+                if (Server.waitingForRandomGamePlayers.Count == StartNumber)
                 {
                     Server.waitingForRandomGamePlayers.Add(listeningClientMessagesSocket.RemoteEndPoint.GetHashCode());
                 }
                 else
                 {
                     var random = new Random();
-                    int randomValue = random.Next(0, 3);
+                    int randomValue = random.Next(StartNumber, TopicsNumber);
 
                     var responseGameMessage = new CommonInformation.Message()
                     {
                         messageType = Message.MessageType.StartGameResponse,
-                        messageSenderID = Server.waitingForRandomGamePlayers[0],
+                        messageSenderID = Server.waitingForRandomGamePlayers[StartNumber],
                         messageReceiverID = listeningClientMessagesSocket.RemoteEndPoint.GetHashCode(),
                         gameTopic = randomValue,
-                        messageName = Server.clientNames[Server.waitingForRandomGamePlayers[0]],
+                        messageName = Server.clientNames[Server.waitingForRandomGamePlayers[StartNumber]],
                         mayStartGame = true
                     };
-                    Server.waitingForRandomGamePlayers.Clear();
+                    Server.waitingForRandomGamePlayers.RemoveAt(StartNumber);
                     OrganizeGame(responseGameMessage);
                 }
             }
             
         }
 
-        GameTopic DefineGameTopic(int gameTopic)
+        private GameTopic DefineGameTopic(int gameTopic)
         {
             if (gameTopic == (int)GameTopic.AroundTheWorld)
             {
@@ -238,24 +248,27 @@ namespace ServerSide
                 return GameTopic.ScienceGranite;
             }
             else
+            {
                 return GameTopic.TechnicalProgress;
+            }       
         }
 
-        void GenerateRandomQuestions()
+        private void GenerateRandomQuestions()
         {
             Random random = new Random();
 
-            int currentAttempt = 0;
+            int currentAttempt = StartNumber;
             int randomVariable;
             while (currentAttempt < randomNumbersOfQuestions.Length)
             {
-                randomVariable = random.Next(0, Server.AllQuestionsInTopic);
+                randomVariable = random.Next(StartNumber, Server.AllQuestionsInTopic);
                 bool isNOTExistsThisNumber = true;
-                int j = 0;
+                int j = StartNumber;
                 while ((j < currentAttempt) && isNOTExistsThisNumber)
                 {
                     if (randomVariable == randomNumbersOfQuestions[j])
                         isNOTExistsThisNumber = false;
+                    j++;
                 }
                 if (isNOTExistsThisNumber)
                 {
@@ -263,13 +276,9 @@ namespace ServerSide
                     currentAttempt++;
                 }
             }
-            /*for (int i = 0; i < randomNumbersOfQuestions.Length; i++)
-            {
-                randomNumbersOfQuestions[i] = random.Next(0, Server.AllQuestionsInTopic);
-            }*/
         }
 
-        void OrganizeGame(Message message)
+        private void OrganizeGame(Message message)
         {
             GameTopic gameTopic = DefineGameTopic(message.gameTopic);
             GenerateRandomQuestions();
@@ -282,63 +291,36 @@ namespace ServerSide
                 game.rigthAnswersOnQuestions[i] = randomNumbersOfQuestions[i] % Server.NumberOfAnswers;
             }
 
-            Server.GamesList.Add(game);
-            Console.WriteLine("game is set");
+            Server.gamesList.Add(game);
+            Console.WriteLine("Game is set");
 
             message.questionsToSend = new string[Server.NumberOfQuestionsInOneGame];
             message.answersToSend = new string[Server.NumberOfAnswers * Server.NumberOfQuestionsInOneGame];
             for (int i = 0; i < Server.NumberOfQuestionsInOneGame; i++)
-                message.questionsToSend[i] = Server.QuestionsDictionary[gameTopic].questions[randomNumbersOfQuestions[i]];
-            int k = 0;
+            {
+                message.questionsToSend[i] = Server.questionsDictionary[gameTopic].questions[randomNumbersOfQuestions[i]];
+            }    
+            int k = StartNumber;
             for (int i = 0; i < Server.NumberOfQuestionsInOneGame; i++)
+            {
                 for (int j = 0; j < Server.NumberOfAnswers; j++)
                 {
-                    message.answersToSend[k] = Server.QuestionsDictionary[gameTopic].answers[randomNumbersOfQuestions[i], j].Title;
+                    message.answersToSend[k] = Server.questionsDictionary[gameTopic].answers[randomNumbersOfQuestions[i], j].Title;
                     k++;
                 }
+            }
 
-            Console.WriteLine(message.messageSenderID);
-            Console.WriteLine(message.messageReceiverID);
+            message.opponentForGameName = Server.clientNames[listeningClientMessagesSocket.RemoteEndPoint.GetHashCode()];
             Server.SendMessage(message, Server.clientSockets[message.messageSenderID]);
+
+            message.opponentForGameName = message.messageName;
             Server.SendMessage(message, Server.clientSockets[message.messageReceiverID]);
-            Console.WriteLine("messages is sended");
         }
 
-        void ProcessStartGameResponseMessage(Message message)
+        private void ProcessStartGameResponseMessage(Message message)
         {
             if (message.mayStartGame)
             {
-                /*GameTopic gameTopic = DefineGameTopic(message.gameTopic);
-                GenerateRandomQuestions();
-          
-                var game = new Game(message.messageSenderID, message.messageReceiverID, message.messageName,
-                Server.clientNames[listeningClientMessagesSocket.RemoteEndPoint.GetHashCode()]);
-
-                for (int i = 0; i < Server.NumberOfQuestionsInOneGame; i++)
-                {
-                    game.rigthAnswersOnQuestions[i] = randomNumbersOfQuestions[i] % Server.NumberOfAnswers;
-                }
-
-                Server.GamesList.Add(game);
-                Console.WriteLine("game is set");
-
-                message.questionsToSend = new string[Server.NumberOfQuestionsInOneGame];
-                message.answersToSend = new string[Server.NumberOfAnswers * Server.NumberOfQuestionsInOneGame];
-                for(int i = 0; i < Server.NumberOfQuestionsInOneGame; i++)
-                    message.questionsToSend[i] = Server.QuestionsDictionary[gameTopic].questions[randomNumbersOfQuestions[i]];
-                int k = 0;
-                for (int i = 0; i < Server.NumberOfQuestionsInOneGame; i++)
-                    for (int j = 0; j < Server.NumberOfAnswers; j++)
-                    {
-                        message.answersToSend[k] = Server.QuestionsDictionary[gameTopic].answers[randomNumbersOfQuestions[i], j].Title;
-                        k++;
-                    }
-
-                Console.WriteLine(message.messageSenderID);
-                Console.WriteLine(message.messageReceiverID);
-                Server.SendMessage(message, Server.clientSockets[message.messageSenderID]);
-                Server.SendMessage(message, Server.clientSockets[message.messageReceiverID]);
-                Console.WriteLine("messages is sended");*/
                 OrganizeGame(message);
             }
             else
@@ -348,17 +330,37 @@ namespace ServerSide
             }
         }
 
-        void NotifyAboutEndedGame(string gameResults)
+        private void NotifyAboutEndedGame(string gameResults)
         {
             var messageGameResults = new Message() { messageName = "Сервер", messageContent = gameResults,
             messageTime = DateTime.Now, messageType = Message.MessageType.Common, IPAdress = "" };
             Console.WriteLine(messageGameResults.messageName + " : " + messageGameResults.messageContent);
             Server.SendToAll(messageGameResults);
-            Server.MessageHistory.Add(messageGameResults.messageTime.ToString() + "  " + messageGameResults.messageName
+            Server.messageHistory.Add(messageGameResults.messageTime.ToString() + "  " + messageGameResults.messageName
             + " : " + messageGameResults.messageContent);
         }
 
-        string UpdatePlayerInformation(int playerID, string playername, int yourPoints, int opponentPoints, bool isLeftGame)
+        private string DefineGameResults(int yourPoints, int opponentPoints, string opponentName)
+        {
+            string gameResults;
+            if (yourPoints > opponentPoints)
+            {
+                gameResults = "Поздравляем, вы выиграли у " + opponentName + " со счётом " + yourPoints.ToString() + ":"
+                + opponentPoints.ToString() + ". ";
+            }
+            else if (yourPoints < opponentPoints)
+            {
+                gameResults = "Увы, вы потерпели поражение от " + opponentName + " со счётом " + opponentPoints.ToString() + ":"
+                + yourPoints.ToString() + ". ";
+            }
+            else
+            {
+                gameResults = "Эхх, ничья с " + opponentName + " - " + yourPoints.ToString() + ":" + opponentPoints.ToString() + ". ";
+            }
+            return gameResults;
+        }
+
+        private string UpdatePlayerInformation(int playerID, string playername, int yourPoints, int opponentPoints, bool isLeftGame)
         {
             string resultStatus = "";
             if (Server.playerInformationDictionary.ContainsKey(playerID))
@@ -426,7 +428,7 @@ namespace ServerSide
                 else if (yourPoints < opponentPoints)
                 {
                     playerInformation.losesNumber = 1;
-                    playerInformation.pointsNumber = 0;
+                    playerInformation.pointsNumber = StartNumber;
                 }
                 else
                 {
@@ -438,11 +440,10 @@ namespace ServerSide
             return resultStatus;
         }
 
-        void ProcessPlayerAnswerMessage(Message message)
+        private void ProcessPlayerAnswerMessage(Message message)
         {
             bool firstPlayerFlag = false;
-            bool secondPlayerFlag = false;
-            foreach (Game game in Server.GamesList)
+            foreach (Game game in Server.gamesList)
             {
                 if ( (game.firstPlayerID == listeningClientMessagesSocket.RemoteEndPoint.GetHashCode())
                     || (game.secondPlayerID == listeningClientMessagesSocket.RemoteEndPoint.GetHashCode()) )
@@ -450,10 +451,10 @@ namespace ServerSide
                     if (game.isPlayedNow)
                     {
                         if (game.firstPlayerID == listeningClientMessagesSocket.RemoteEndPoint.GetHashCode())
+                        {
                             firstPlayerFlag = true;
-                        else
-                            secondPlayerFlag = true;
-
+                        }
+                            
                         var responseYourselfMessage = new Message() { messageType = Message.MessageType.YourAnswerStatus };
 
                         if (game.rigthAnswersOnQuestions[message.answeredQuestionNumber] == message.answerNumber)
@@ -505,7 +506,8 @@ namespace ServerSide
                                     game.gameResults = game.firstPlayerName + "   " + game.firstPlayerPoints + " : "
                                     + game.secondPlayerPoints + "   " + game.secondPlayerName;
 
-                                    responseResultMessage.gameStatus = game.gameResults;
+                                    responseResultMessage.gameStatus = DefineGameResults(game.secondPlayerPoints, game.firstPlayerPoints,
+                                    game.firstPlayerName);
                                     responseResultMessage.gameStatus = responseResultMessage.gameStatus
                                     + UpdatePlayerInformation(game.secondPlayerID, Server.clientNames[game.secondPlayerID],
                                     game.secondPlayerPoints, game.firstPlayerPoints, false);
@@ -513,7 +515,8 @@ namespace ServerSide
 
                                     Thread.Sleep(250);
 
-                                    responseResultMessage.gameStatus = game.gameResults;
+                                    responseResultMessage.gameStatus = DefineGameResults(game.firstPlayerPoints, game.secondPlayerPoints,
+                                    game.secondPlayerName);
                                     responseResultMessage.gameStatus = responseResultMessage.gameStatus
                                     + UpdatePlayerInformation(game.firstPlayerID, Server.clientNames[game.firstPlayerID],
                                     game.firstPlayerPoints, game.secondPlayerPoints, false);
@@ -525,7 +528,7 @@ namespace ServerSide
                                 else
                                 {
                                     var responseStatusMessage = new Message() { messageType = Message.MessageType.GameStatus };
-                                    responseStatusMessage.gameStatus = "Ожидайте оппонента...";
+                                    responseStatusMessage.gameStatus = WaitingForOpponent;
                                     Server.SendMessage(responseStatusMessage, Server.clientSockets[game.firstPlayerID]);
                                 }
                             }
@@ -543,7 +546,8 @@ namespace ServerSide
                                     game.gameResults = game.firstPlayerName + "   " + game.firstPlayerPoints + " : "
                                     + game.secondPlayerPoints + "   " + game.secondPlayerName;
 
-                                    responseResultMessage.gameStatus = game.gameResults;
+                                    responseResultMessage.gameStatus = DefineGameResults(game.firstPlayerPoints, game.secondPlayerPoints,
+                                    game.secondPlayerName);
                                     responseResultMessage.gameStatus = responseResultMessage.gameStatus
                                     + UpdatePlayerInformation(game.firstPlayerID, Server.clientNames[game.firstPlayerID],
                                     game.firstPlayerPoints, game.secondPlayerPoints, false);
@@ -551,7 +555,8 @@ namespace ServerSide
 
                                     Thread.Sleep(250);
 
-                                    responseResultMessage.gameStatus = game.gameResults;
+                                    responseResultMessage.gameStatus = DefineGameResults(game.secondPlayerPoints, game.firstPlayerPoints,
+                                    game.firstPlayerName);
                                     responseResultMessage.gameStatus = responseResultMessage.gameStatus
                                     + UpdatePlayerInformation(game.secondPlayerID, Server.clientNames[game.secondPlayerID],
                                     game.secondPlayerPoints, game.firstPlayerPoints, false);
@@ -563,7 +568,7 @@ namespace ServerSide
                                 else
                                 {
                                     var responseStatusMessage = new Message() { messageType = Message.MessageType.GameStatus };
-                                    responseStatusMessage.gameStatus = "Ожидайте оппонента...";
+                                    responseStatusMessage.gameStatus = WaitingForOpponent;
                                     Server.SendMessage(responseStatusMessage, Server.clientSockets[game.secondPlayerID]);
                                 }
                             }
@@ -574,9 +579,9 @@ namespace ServerSide
             }
         }
 
-        void ProcessLeftGameMesasage(Message message)
+        private void ProcessLeftGameMesasage(Message message)
         {
-            foreach (Game game in Server.GamesList)
+            foreach (Game game in Server.gamesList)
             {
                 if ( ((game.firstPlayerID == listeningClientMessagesSocket.RemoteEndPoint.GetHashCode())
                 || (game.secondPlayerID == listeningClientMessagesSocket.RemoteEndPoint.GetHashCode())) && game.isPlayedNow )
@@ -588,21 +593,29 @@ namespace ServerSide
                     game.isSecondFinished = true;
                     if (game.firstPlayerID == listeningClientMessagesSocket.RemoteEndPoint.GetHashCode())
                     {
-                        game.firstPlayerPoints = 0;
+                        game.firstPlayerPoints = StartNumber;
+                        if (game.secondPlayerPoints == StartNumber)
+                        {
+                            game.secondPlayerPoints = 3;
+                        }
                         isFirstPlayerLeft = true;
                     }     
                     else
                     {
-                        game.secondPlayerPoints = 0;
+                        game.secondPlayerPoints = StartNumber;
+                        if (game.firstPlayerPoints == StartNumber)
+                        {
+                            game.firstPlayerPoints = 3;
+                        }
                         isFirstPlayerLeft = false;
                     }
                            
                     game.gameResults = game.firstPlayerName + "   " + game.firstPlayerPoints + " : "
                     + game.secondPlayerPoints + "   " + game.secondPlayerName + " (тех.поражение)";
-                    responseResultMessage.gameStatus = game.gameResults;
 
                     if (isFirstPlayerLeft)
                     {
+                        responseResultMessage.gameStatus = DefineGameResults(game.secondPlayerPoints, game.firstPlayerPoints, game.firstPlayerName);
                         string updatedResultOfFirstPlayer = UpdatePlayerInformation(game.firstPlayerID, Server.clientNames[game.firstPlayerID],
                         game.firstPlayerPoints, game.secondPlayerPoints, true);
                         string updatedResultOfSecondPlayer = UpdatePlayerInformation(game.secondPlayerID, Server.clientNames[game.secondPlayerID],
@@ -613,13 +626,15 @@ namespace ServerSide
 
                         if (Server.clientSockets.ContainsKey(game.firstPlayerID))
                         {
-                            responseResultMessage.gameStatus = game.gameResults;
+                            responseResultMessage.gameStatus = DefineGameResults(game.firstPlayerPoints, game.secondPlayerPoints,
+                            game.secondPlayerName);
                             responseResultMessage.gameStatus += updatedResultOfFirstPlayer;
                             Server.SendMessage(responseResultMessage, Server.clientSockets[game.firstPlayerID]);
                         }
                     }
                     else
                     {
+                        responseResultMessage.gameStatus = DefineGameResults(game.firstPlayerPoints, game.secondPlayerPoints, game.secondPlayerName);
                         string updatedResultOfFirstPlayer = UpdatePlayerInformation(game.firstPlayerID, Server.clientNames[game.firstPlayerID],
                         game.firstPlayerPoints, game.secondPlayerPoints, false);
                         string updatedResultOfSecondPlayer = UpdatePlayerInformation(game.secondPlayerID, Server.clientNames[game.secondPlayerID],
@@ -630,29 +645,21 @@ namespace ServerSide
 
                         if (Server.clientSockets.ContainsKey(game.secondPlayerID))
                         {
-                            responseResultMessage.gameStatus = game.gameResults;
+                            responseResultMessage.gameStatus = DefineGameResults(game.secondPlayerPoints, game.firstPlayerPoints,
+                            game.firstPlayerName);
                             responseResultMessage.gameStatus += updatedResultOfSecondPlayer;
                             Server.SendMessage(responseResultMessage, Server.clientSockets[game.secondPlayerID]);
                         }
                     }
-                        
-
-                    /*if (game.firstPlayerID == listeningClientMessagesSocket.RemoteEndPoint.GetHashCode())
-                        Server.SendMessage(responseResultMessage, Server.clientSockets[game.secondPlayerID]);
-                    else
-                        Server.SendMessage(responseResultMessage, Server.clientSockets[game.firstPlayerID]);*/
-
                     game.isPlayedNow = false;
-
                     NotifyAboutEndedGame(game.gameResults);
-
                 }
             }
         }
 
-        void ProcessGetStatisticsMesasage(Message message)
+        private void ProcessGetStatisticsMesasage(Message message)
         {
-            if (message.messageReceiverID != 0)
+            if (message.messageReceiverID != StartNumber)
             {
                 if (Server.playerInformationDictionary.ContainsKey(message.messageReceiverID))
                 {
@@ -694,42 +701,43 @@ namespace ServerSide
             Server.SendMessage(message, listeningClientMessagesSocket);
         }
 
-        int[] SelectionOfTwoRandomWrongAnswers(int numberOfRightAnswer)
+        private int[] SelectionOfTwoRandomWrongAnswers(int numberOfRightAnswer)
         {
+            const int WrongAnswersNumber = 2;
             var random = new Random();
-            int[] resultTwoRandomValues = new int[2];
+            int[] resultTwoRandomValues = new int[WrongAnswersNumber];
 
             int randomValue;
-            while ((randomValue = random.Next(0, Server.NumberOfAnswers)) == numberOfRightAnswer);
+            while ((randomValue = random.Next(StartNumber, Server.NumberOfAnswers)) == numberOfRightAnswer);
             resultTwoRandomValues[0] = randomValue;
 
-            randomValue = random.Next(0, Server.NumberOfAnswers);
+            randomValue = random.Next(StartNumber, Server.NumberOfAnswers);
             while ((randomValue == numberOfRightAnswer) || (randomValue == resultTwoRandomValues[0]))
             {
-                randomValue = random.Next(0, Server.NumberOfAnswers);
+                randomValue = random.Next(StartNumber, Server.NumberOfAnswers);
             }
             resultTwoRandomValues[1] = randomValue;
 
             return resultTwoRandomValues;
         }
 
-        int[] DefineProbabilityOfAnswers(int numberOfRightAnswer, int questionNumber)
+        private int[] DefineProbabilityOfAnswers(int numberOfRightAnswer, int questionNumber)
         {
             var random = new Random();
             int[] resultFourRandomPercentagesOfAnswers = new int[Server.NumberOfAnswers];
 
-            if (questionNumber < 5)
+            if (questionNumber < BoundaryOfLightQuestions)
             {
-                resultFourRandomPercentagesOfAnswers[numberOfRightAnswer] = random.Next(50, 70);
-                int leftProbability = 100 - resultFourRandomPercentagesOfAnswers[numberOfRightAnswer];
+                resultFourRandomPercentagesOfAnswers[numberOfRightAnswer] = random.Next(Probabilities[4], Probabilities[5]);
+                int leftProbability = MaxProbability - resultFourRandomPercentagesOfAnswers[numberOfRightAnswer];
                 int[] leftProbabilities = new int[Server.NumberOfAnswers - 1];
-                leftProbabilities[0] = random.Next(0, leftProbability / 3);
-                leftProbabilities[1] = random.Next(0, leftProbability / 3);
+                leftProbabilities[0] = random.Next(0, leftProbability / (Server.NumberOfAnswers - 1));
+                leftProbabilities[1] = random.Next(0, leftProbability / (Server.NumberOfAnswers - 1));
                 leftProbabilities[2] = leftProbability - leftProbabilities[0] - leftProbabilities[1];
 
                 int i = 0;
                 int j = 0;
-                while (i < 3)
+                while (i < (Server.NumberOfAnswers - 1))
                 {
                     if (numberOfRightAnswer != j)
                     {
@@ -739,18 +747,18 @@ namespace ServerSide
                     j++;
                 }
             }
-            else if (questionNumber < 8)
+            else if (questionNumber < BoundaryOfMediumQuestions)
             {
-                resultFourRandomPercentagesOfAnswers[numberOfRightAnswer] = random.Next(30, 50);
+                resultFourRandomPercentagesOfAnswers[numberOfRightAnswer] = random.Next(Probabilities[2], Probabilities[4]);
                 int[] leftProbabilities = new int[Server.NumberOfAnswers - 1];
-                leftProbabilities[0] = random.Next(25, 40);
-                int leftProbability = 100 - resultFourRandomPercentagesOfAnswers[numberOfRightAnswer] - leftProbabilities[0];
+                leftProbabilities[0] = random.Next(Probabilities[1], Probabilities[3]);
+                int leftProbability = MaxProbability - resultFourRandomPercentagesOfAnswers[numberOfRightAnswer] - leftProbabilities[0];
                 leftProbabilities[1] = random.Next(0, leftProbability / 2);
                 leftProbabilities[2] = leftProbability - leftProbabilities[1];
 
                 int i = 0;
                 int j = 0;
-                while (i < 3)
+                while (i < (Server.NumberOfAnswers - 1))
                 {
                     if (numberOfRightAnswer != j)
                     {
@@ -764,17 +772,17 @@ namespace ServerSide
             {
                 for (int i = 0; i < Server.NumberOfAnswers - 1; i++)
                 {
-                    resultFourRandomPercentagesOfAnswers[i] = random.Next(20, 30);
+                    resultFourRandomPercentagesOfAnswers[i] = random.Next(Probabilities[0], Probabilities[2]);
                 }
-                resultFourRandomPercentagesOfAnswers[Server.NumberOfAnswers - 1] = 100 - resultFourRandomPercentagesOfAnswers[0] -
+                resultFourRandomPercentagesOfAnswers[Server.NumberOfAnswers - 1] = MaxProbability - resultFourRandomPercentagesOfAnswers[0] -
                 resultFourRandomPercentagesOfAnswers[1] - resultFourRandomPercentagesOfAnswers[2];
             }
             return resultFourRandomPercentagesOfAnswers;
         }
 
-        void ProcessPromptRequestMesasage(Message message)
+        private void ProcessPromptRequestMesasage(Message message)
         {
-            foreach (Game game in Server.GamesList)
+            foreach (Game game in Server.gamesList)
             {
                 if (((game.firstPlayerID == listeningClientMessagesSocket.RemoteEndPoint.GetHashCode())
                 || (game.secondPlayerID == listeningClientMessagesSocket.RemoteEndPoint.GetHashCode())) && game.isPlayedNow)
@@ -796,9 +804,9 @@ namespace ServerSide
             }
         }
 
-        void ProcessInterruptSearchingForOpponentMesasage(Message message)
+        private void ProcessInterruptSearchingForOpponentMesasage(Message message)
         {
-            Server.waitingForRandomGamePlayers.Clear();
+            Server.waitingForRandomGamePlayers.Remove(listeningClientMessagesSocket.RemoteEndPoint.GetHashCode());
         }
 
         public List<ClientsInfo> GetClientsList()
@@ -814,14 +822,14 @@ namespace ServerSide
         public List<string> GetGameTopics()
         {
             List<string> topics = new List<string>();
-            foreach (KeyValuePair<GameTopic, string> keyValuePair in QuestionsForTopic.TopicsDictionary)
+            foreach (KeyValuePair<GameTopic, string> keyValuePair in QuestionsForTopic.topicsDictionary)
             {
                 topics.Add(keyValuePair.Value);
             }
             return topics;
         }
 
-        bool IsClientConnected()
+        private bool IsClientConnected()
         {
             bool IsConnected = true;
             try
@@ -840,7 +848,7 @@ namespace ServerSide
         public string RemoveClient()
         {
             string leftClientName = Server.clientNames[listeningClientMessagesSocket.RemoteEndPoint.GetHashCode()];
-            Console.WriteLine(leftClientName + " покинул беседу");
+            Console.WriteLine(leftClientName + LeftChat);
             Server.RemoveClient(listeningClientMessagesSocket.RemoteEndPoint.GetHashCode());
             listeningClientMessagesSocket.Close();
             listeningClientMessagesSocket = null;
@@ -849,7 +857,7 @@ namespace ServerSide
 
         public void NotifyClientLeft(string leftClientName)
         {
-            Server.SendToAll(new Message(leftClientName, " покинул беседу", Message.MessageType.Common));
+            Server.SendToAll(new Message(leftClientName, LeftChat, Message.MessageType.Common));
             List<ClientsInfo> info = GetClientsList();
             Server.SendToAll(new Message(info));
         }

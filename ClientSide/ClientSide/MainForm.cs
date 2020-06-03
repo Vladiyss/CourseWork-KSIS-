@@ -14,74 +14,138 @@ namespace ClientSide
 {
     public partial class MainForm : Form
     {
-        const int CHATDIALOG = 0;
-        const int NumberOfQuestions = 10;
-        const int NumberOfAnswers = 4;
+        private const int ChatDialog = 0;
+        private const int NumberOfQuestions = 10;
+        private const int NumberOfAnswers = 4;
+        private const int StartNumber = 0;
+        private const int buttonAnswerBClicked = 1;
+        private const int buttonAnswerCClicked = 2;
+        private const int buttonAnswerDClicked = 3;
+        private const int InvalidValue = -1;
+        private readonly int[] BoundaryProbabilityOfAnswerCorrectness =  new int[] { 10, 20, 30, 40, 50, 60 }; 
 
-        Client client;
+        private const string Nothing = "---";
+        private const string NotConnected = "Нет соединения...";
+        private const string Connected = "ПОДКЛЮЧЕНО";
+        private const string ChatName = "Чат";
+        private const string StringWithNull = "0";
+        private const string NullString = "";
+        private const string Percent = "%";
 
-        delegate void ProcessFormFilling();
-        Dictionary<int, AllDialogsMessages> chatDialogsInfo;
-        List<ClientsInfo> clientsInfo;
-        int CurrentDialog = CHATDIALOG;
-        int selectedReceiverIndex = 0;
-        int currentGameTopic = -1;
+        private Client client;
 
-        string[] questions = new string[NumberOfQuestions];
-        string[] answers = new string[NumberOfQuestions*NumberOfAnswers];
-        int currentQuestionNumber;
-        int currentAnswerNumber;
-        int messageSenderID;
-        int messageReceiverID;
-        int gametopic;
-        string messageSenderName;
+        private delegate void ProcessFormFilling();
+        private Dictionary<int, AllDialogsMessages> chatDialogsInfo;
+        private List<ClientsInfo> clientsInfo;
+        private int currentDialog = ChatDialog;
+        private int selectedReceiverIndex = 0;
+        private int currentGameTopic = -1;
+
+        private string[] questions = new string[NumberOfQuestions];
+        private string[] answers = new string[NumberOfQuestions*NumberOfAnswers];
+        private int currentQuestionNumber;
+        private int currentAnswerNumber;
+        private int messageSenderID;
+        private int messageReceiverID;
+        private int gametopic;
+        private string messageSenderName;
+        private bool isPromptUsed = false;
 
         public MainForm()
         {
             InitializeComponent();
             clientsInfo = new List<ClientsInfo>();
-            clientsInfo.Add(new ClientsInfo() { clientID = CHATDIALOG, clientName = "Чат" });
+            clientsInfo.Add(new ClientsInfo() { clientID = ChatDialog, clientName = ChatName });
             chatDialogsInfo = new Dictionary<int, AllDialogsMessages>();
-            chatDialogsInfo.Add(CHATDIALOG, new AllDialogsMessages("Чат"));
+            chatDialogsInfo.Add(ChatDialog, new AllDialogsMessages(ChatName));
 
             client = new Client();
             client.ProcessReceivedMessagesEvent += ProcessReceivedMessages;
+        }
+
+        private void ChangeNamesOfAnswerButtons()
+        {
+            buttonAnswerA.Text = "A";
+            buttonAnswerB.Text = "B";
+            buttonAnswerC.Text = "C";
+            buttonAnswerD.Text = "D";
+        }
+
+        private void ChangeAnswerButtonsColor()
+        {
+            buttonAnswerA.BackColor = SystemColors.Control;
+            buttonAnswerB.BackColor = SystemColors.Control;
+            buttonAnswerC.BackColor = SystemColors.Control;
+            buttonAnswerD.BackColor = SystemColors.Control;
+        }
+
+        private void SetAnswerButtonsVisible()
+        {
+            buttonAnswerA.Visible = true;
+            buttonAnswerB.Visible = true;
+            buttonAnswerC.Visible = true;
+            buttonAnswerD.Visible = true;
+        }
+
+        private void SetPromptsButtonsVisible()
+        {
+            button5050Prompt.Visible = true;
+            buttonHallPrompt.Visible = true;
+        }
+
+        private void SetPromptsButtonsEnable(bool isEnabled)
+        {
+            button5050Prompt.Enabled = isEnabled;
+            buttonHallPrompt.Enabled = isEnabled;
         }
 
         public void ShowQuestion()
         {
             if (currentQuestionNumber != NumberOfQuestions)
             {
-                labelQuestion.Text = questions[currentQuestionNumber];
+                richTextBoxQuestion.Text = questions[currentQuestionNumber];
                 labelAnswerA.Text = "A:  " + answers[currentAnswerNumber];
                 labelAnswerB.Text = "B:  " + answers[currentAnswerNumber + 1];
                 labelAnswerC.Text = "C:  " + answers[currentAnswerNumber + 2];
                 labelAnswerD.Text = "D:  " + answers[currentAnswerNumber + 3];
-                currentAnswerNumber += 4;
+                currentAnswerNumber += NumberOfAnswers;
+                labelCurrentQuestionNumber.Text = (currentQuestionNumber + 1).ToString();
 
-                buttonAnswerA.Visible = true;
-                buttonAnswerB.Visible = true;
-                buttonAnswerC.Visible = true;
-                buttonAnswerD.Visible = true;
-                panelHallPrompt.Visible = false;
+                if (isPromptUsed)
+                {
+                    SetPromptsButtonsVisible();
+                    ChangeNamesOfAnswerButtons();
+                    ChangeAnswerButtonsColor();
+                    SetAnswerButtonsVisible();
+                    isPromptUsed = false;
+                }
             }
         }
 
-        void ClearGameField()
+        private void ClearGameField()
         {
-            labelQuestion.Text = "---";
-            labelAnswerA.Text = "---";
-            labelAnswerB.Text = "---";
-            labelAnswerC.Text = "---";
-            labelAnswerD.Text = "---";
-            labelAnswerStatus.Text = "---";
+            richTextBoxQuestion.Text = Nothing;
+            labelAnswerA.Text = Nothing;
+            labelAnswerB.Text = Nothing;
+            labelAnswerC.Text = Nothing;
+            labelAnswerD.Text = Nothing;
+            if (isPromptUsed)
+            {
+                ChangeAnswerButtonsColor();
+                ChangeNamesOfAnswerButtons();
+                SetAnswerButtonsVisible();
+                SetPromptsButtonsVisible();
+                isPromptUsed = false;
+            }
+            
+            labelAnswerStatus.Text = Nothing;
+            labelCurrentQuestionNumber.Text = Nothing;
 
             buttonAnswerA.Enabled = false;
             buttonAnswerB.Enabled = false;
             buttonAnswerC.Enabled = false;
             buttonAnswerD.Enabled = false;
-
-            panelHallPrompt.Visible = false;
+            SetPromptsButtonsEnable(false);
         }
 
         public void ProcessReceivedMessages(CommonInformation.Message message)
@@ -89,253 +153,46 @@ namespace ClientSide
             switch (message.messageType)
             {
                 case CommonInformation.Message.MessageType.Common:
-                    if (message.IPAdress == "")
-                        chatDialogsInfo[CHATDIALOG].AddMessage(DateTime.Now.ToShortTimeString()
-                        + " - " + message.messageName + " : " + message.messageContent);
-                    else
-                        chatDialogsInfo[CHATDIALOG].AddMessage(message.messageTime.ToString() + " - " + message.IPAdress
-                            + " - " + message.messageName + " : " + message.messageContent);
+                    ProcessCommonMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.Private:
-                    chatDialogsInfo[message.messageSenderID].AddMessage(message.messageTime.ToString() + " : " + message.messageContent);
-                    labelNewMessage.Text = "Новое сообщение от " + message.messageName;
+                    ProcessPrivateMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.History:
-                    chatDialogsInfo[CurrentDialog].Messages = message.messageHistory;
+                    ProcessHistoryRequestMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.SendGameTopics:
-                    {
-                        ProcessFormFilling FormFillingGameTopics = delegate
-                        {
-                            foreach (string topic in message.GameTopics)
-                            {
-                                comboBoxGameTopics.Items.Add(topic);
-                            }
-                        };
-                        if (InvokeRequired)
-                            Invoke(FormFillingGameTopics);
-                        else
-                            FormFillingGameTopics();
-                    }
+                    ProcessSendGameTopicsMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.ClientsList:
-                    {
-                        ProcessFormFilling FormFillingNewClient = delegate
-                        {
-                            clientsInfo.Clear();
-                            clientsInfo.Add(new ClientsInfo() { clientID = CHATDIALOG, clientName = "Чат" });
-                            foreach (ClientsInfo nameClient in message.clientsInfo)
-                            {
-                                clientsInfo.Add(nameClient);
-                                if (!chatDialogsInfo.ContainsKey(nameClient.clientID))
-                                {
-                                    chatDialogsInfo.Add(nameClient.clientID, new AllDialogsMessages(nameClient.clientName));
-                                }
-                            }
-                        };
-                        if (InvokeRequired)
-                            Invoke(FormFillingNewClient);
-                        else
-                            FormFillingNewClient();
-                    }
+                    ProcessClientsListMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.SearchResponce:
-                    {
-                        ProcessFormFilling FormFillingServerResponse = delegate
-                        {
-                            textBoxServerIPAddress.Text = message.IPAdress;
-                            textBoxServerPort.Text = message.serverPort.ToString();
-                            textBoxServerIPAddress.Enabled = false;
-                            textBoxServerPort.Enabled = false;
-                        };
-                        if (InvokeRequired)
-                            Invoke(FormFillingServerResponse);
-                        else
-                            FormFillingServerResponse();
-                    }
+                    ProcessServerResponseMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.StartGameRequest:
-                    {
-                        ProcessFormFilling FormAddGameRequest = delegate
-                        {
-                            labelGameStatus.Text = message.gameStartDetails;
-                            buttonAcceptGame.Visible = true;
-                            buttonRejectGame.Visible = true;
-                            messageSenderID = message.messageSenderID;
-                            messageReceiverID = message.messageReceiverID;
-                            messageSenderName = message.messageName;
-                            gametopic = message.gameTopic;
-                        };
-                        if (InvokeRequired)
-                            Invoke(FormAddGameRequest);
-                        else
-                            FormAddGameRequest();
-                    }
+                    ProcessStartGameRequestMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.StartGameResponse:
-                    {
-                        ProcessFormFilling FormAddGameResponse = delegate
-                        {
-                            if (message.mayStartGame == false)
-                            {
-                                labelGameStatus.Text = message.gameStartDetails;
-                            }
-                            else
-                            {
-                                questions = message.questionsToSend;
-                                answers = message.answersToSend;
-                                currentQuestionNumber = 0;
-                                currentAnswerNumber = 0;
-                                panelGame.Visible = true;
-                                labelAnswerStatus.Text = "---";
-                                buttonAnswerA.Enabled = true;
-                                buttonAnswerB.Enabled = true;
-                                buttonAnswerC.Enabled = true;
-                                buttonAnswerD.Enabled = true;
-                                button5050Prompt.Enabled = true;
-                                buttonHallPrompt.Enabled = true;
-                                ShowQuestion();
-                                labelYourPointsNumber.Text = "0";
-                                labelOpponentPointsNumber.Text = "0";
-                            }
-
-                        };
-                        if (InvokeRequired)
-                            Invoke(FormAddGameResponse);
-                        else
-                            FormAddGameResponse();
-                    }
+                    ProcessStartGameResponseMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.YourAnswerStatus:
-                    {
-                        ProcessFormFilling FormAnswerStatus = delegate
-                        {
-                            if (message.isCorrectAnswer)
-                            {
-                                labelAnswerStatus.Text = "Верно!";
-                                int points = int.Parse(labelYourPointsNumber.Text);
-                                points++;
-                                labelYourPointsNumber.Text = points.ToString();
-                            }
-                            else
-                            {
-                                labelAnswerStatus.Text = "Неверно!";
-                            }
-
-                        };
-                        if (InvokeRequired)
-                            Invoke(FormAnswerStatus);
-                        else
-                            FormAnswerStatus();
-                    }
+                    ProcessYourAnswerStatusMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.OpponentRightAnswer:
-                    {
-                        ProcessFormFilling FormOpponentAnswerStatus = delegate
-                        {
-                            int opponentPoints = int.Parse(labelOpponentPointsNumber.Text);
-                            opponentPoints++;
-                            labelOpponentPointsNumber.Text = opponentPoints.ToString();
-                           
-                        };
-                        if (InvokeRequired)
-                            Invoke(FormOpponentAnswerStatus);
-                        else
-                            FormOpponentAnswerStatus();
-                    }
+                    ProcessOpponentRightAnswerMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.GameStatus:
-                    {
-                        ProcessFormFilling FormGameStatus = delegate
-                        {
-                            ClearGameField();
-                            labelGameStatus.Text = message.gameStatus;
-                        };
-                        if (InvokeRequired)
-                            Invoke(FormGameStatus);
-                        else
-                            FormGameStatus();
-                    }
+                    ProcessGameStatusMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.GameResults:
-                    {
-                        ProcessFormFilling FormGameResult = delegate
-                        {
-                            ClearGameField();
-                            panelGame.Visible = false;
-                            labelGameStatus.Text = message.gameStatus;
-                        };
-                        if (InvokeRequired)
-                            Invoke(FormGameResult);
-                        else
-                            FormGameResult();
-                    }
+                    ProcessGameResultsMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.GetStatistics:
-                    {
-                        ProcessFormFilling FormGetStatisticsResult = delegate
-                        {
-                            if (message.messageReceiverID != 0)
-                            {
-                                richTextBoxStatistics.Visible = true;
-                                richTextBoxStatistics.Clear();
-                                dataGridViewStatistics.Visible = false;
-                                if (message.isfailedToGetStatistics)
-                                    richTextBoxStatistics.Text = "Данный участник чата ещё ни разу не играл!";
-                                else
-                                {
-                                    richTextBoxStatistics.Text = message.playerInfo.playerName + "(" + message.playerInfo.playerStatus
-                                    + ")" + "\r\n";
-                                    richTextBoxStatistics.Text += "Игры                     " + message.playerInfo.numberOfPlayedGames + "\r\n";
-                                    richTextBoxStatistics.Text += "Победы/ничьи/поражения   " + message.playerInfo.winsNumber
-                                    + "/" + message.playerInfo.drawsNumber + "/" + message.playerInfo.losesNumber +"\r\n";
-                                    richTextBoxStatistics.Text += "Верные/неверные ответы   " + message.playerInfo.rightAnswersNumber
-                                    + "/" + message.playerInfo.wrongAnswersNumber + "\r\n";
-                                    richTextBoxStatistics.Text += "Количество очков         " + message.playerInfo.pointsNumber + "\r\n";
-                                }
-                            }
-                            else
-                            {
-                                dataGridViewStatistics.Rows.Clear();
-                                dataGridViewStatistics.Visible = true;
-                                richTextBoxStatistics.Visible = false;
-                                foreach (PlayerInfo playerInfo in message.playerInfoList)
-                                {
-                                    dataGridViewStatistics.Rows.Add(playerInfo.playerName, playerInfo.numberOfPlayedGames,
-                                    playerInfo.winsNumber, playerInfo.drawsNumber, playerInfo.losesNumber, playerInfo.rightAnswersNumber,
-                                    playerInfo.wrongAnswersNumber, playerInfo.pointsNumber);
-                                }
-                            }
-                        };
-                        if (InvokeRequired)
-                            Invoke(FormGetStatisticsResult);
-                        else
-                            FormGetStatisticsResult();
-                    }
+                    ProcessGetStatisticsMessage(message);
                     break;
                 case CommonInformation.Message.MessageType.PromptResponse:
-                    {
-                        ProcessFormFilling FormPromptResponse = delegate
-                        {
-                            if (message.is5050Prompt)
-                            {
-                                RemoveOneIncorrectAnswer(message.twoWrongAnswersFor5050Prompt[0]);
-                                RemoveOneIncorrectAnswer(message.twoWrongAnswersFor5050Prompt[1]);
-                            }
-                            else
-                            {
-                                panelHallPrompt.Visible = true;
-                                labelProbabilityAAnswer.Text = message.probabilityOfAnswersCorrectness[0].ToString();
-                                labelProbabilityBAnswer.Text = message.probabilityOfAnswersCorrectness[1].ToString();
-                                labelProbabilityCAnswer.Text = message.probabilityOfAnswersCorrectness[2].ToString();
-                                labelProbabilityDAnswer.Text = message.probabilityOfAnswersCorrectness[3].ToString();
-                            }
-                        };
-                        if (InvokeRequired)
-                            Invoke(FormPromptResponse);
-                        else
-                            FormPromptResponse();
-                    }
+                    ProcessPromptResponseMessage(message);
                     break;
                 default:
                     return;
@@ -359,8 +216,8 @@ namespace ClientSide
                 richTextBoxChatContent.Clear();
                 if (chatDialogsInfo != null)
                 {
-                    string[] messages = new string[chatDialogsInfo[CurrentDialog].Messages.Count];
-                    chatDialogsInfo[CurrentDialog].Messages.CopyTo(messages);
+                    string[] messages = new string[chatDialogsInfo[currentDialog].messages.Count];
+                    chatDialogsInfo[currentDialog].messages.CopyTo(messages);
                     foreach (string messageContent in messages)
                     {
                         richTextBoxChatContent.Text += messageContent + "\r\n";
@@ -372,15 +229,20 @@ namespace ClientSide
                     comboBoxParticipants.Items.Add(clientInfo.clientName);
                 }
 
-                labelCurrentClientDialog.Text = chatDialogsInfo[CurrentDialog].Name;
+                labelCurrentClientDialog.Text = chatDialogsInfo[currentDialog].dialogName;
 
-                if (CurrentDialog != CHATDIALOG)
+                if (currentDialog != ChatDialog)
                 {
                     buttonPlay.Visible = true;
                     labelSelectTopic.Visible = true;
                     comboBoxGameTopics.Visible = true;
                 }
-                    
+                else
+                {
+                    buttonPlay.Visible = false;
+                    labelSelectTopic.Visible = false;
+                    comboBoxGameTopics.Visible = false;
+                }
             };
             if (InvokeRequired)
                 Invoke(FormUpdate);
@@ -388,20 +250,330 @@ namespace ClientSide
                 FormUpdate();
         }
 
-        void RemoveOneIncorrectAnswer(int incorrectAnswerNumber)
+        private void ProcessCommonMessage(CommonInformation.Message message)
+        {
+            if (String.IsNullOrEmpty(message.IPAdress))
+            {
+                chatDialogsInfo[ChatDialog].AddMessage(DateTime.Now.ToShortTimeString()
+                + " - " + message.messageName + " : " + message.messageContent);
+            }
+            else
+            {
+                chatDialogsInfo[ChatDialog].AddMessage(message.messageTime.ToString() + " - " + message.IPAdress
+                + " - " + message.messageName + " : " + message.messageContent);
+            }     
+        }
+
+        private void ProcessPrivateMessage(CommonInformation.Message message)
+        {
+            chatDialogsInfo[message.messageSenderID].AddMessage(message.messageTime.ToString() + " : " + message.messageContent);
+            labelNewMessage.Text = "Новое сообщение от " + message.messageName;
+        }
+
+        private void ProcessHistoryRequestMessage(CommonInformation.Message message)
+        {
+            chatDialogsInfo[currentDialog].messages = message.messageHistory;
+        }
+
+        private void ProcessSendGameTopicsMessage(CommonInformation.Message message)
+        {
+            ProcessFormFilling FormFillingGameTopics = delegate
+            {
+                foreach (string topic in message.gameTopics)
+                {
+                    comboBoxGameTopics.Items.Add(topic);
+                }
+            };
+            if (InvokeRequired)
+                Invoke(FormFillingGameTopics);
+            else
+                FormFillingGameTopics();
+        }
+
+        private void ProcessClientsListMessage(CommonInformation.Message message)
+        {
+            ProcessFormFilling FormFillingNewClient = delegate
+            {
+                clientsInfo.Clear();
+                clientsInfo.Add(new ClientsInfo() { clientID = ChatDialog, clientName = ChatName });
+                foreach (ClientsInfo nameClient in message.clientsInfo)
+                {
+                    clientsInfo.Add(nameClient);
+                    if (!chatDialogsInfo.ContainsKey(nameClient.clientID))
+                    {
+                        chatDialogsInfo.Add(nameClient.clientID, new AllDialogsMessages(nameClient.clientName));
+                    }
+                }
+            };
+            if (InvokeRequired)
+                Invoke(FormFillingNewClient);
+            else
+                FormFillingNewClient();
+        }
+
+        private void ProcessServerResponseMessage(CommonInformation.Message message)
+        {
+            ProcessFormFilling FormFillingServerResponse = delegate
+            {
+                textBoxServerIPAddress.Text = message.IPAdress;
+                textBoxServerPort.Text = message.serverPort.ToString();
+                textBoxServerIPAddress.Enabled = false;
+                textBoxServerPort.Enabled = false;
+            };
+            if (InvokeRequired)
+                Invoke(FormFillingServerResponse);
+            else
+                FormFillingServerResponse();
+        }
+
+        private void ProcessStartGameRequestMessage(CommonInformation.Message message)
+        {
+            ProcessFormFilling FormAddGameRequest = delegate
+            {
+                richTextBoxGameStatus.Text = message.gameStartDetails;
+                buttonAcceptGame.Visible = true;
+                buttonRejectGame.Visible = true;
+                messageSenderID = message.messageSenderID;
+                messageReceiverID = message.messageReceiverID;
+                messageSenderName = message.messageName;
+                gametopic = message.gameTopic;
+            };
+            if (InvokeRequired)
+                Invoke(FormAddGameRequest);
+            else
+                FormAddGameRequest();
+        }
+
+        private void ProcessStartGameResponseMessage(CommonInformation.Message message)
+        {
+            ProcessFormFilling FormAddGameResponse = delegate
+            {
+                if (message.mayStartGame == false)
+                {
+                    richTextBoxGameStatus.Text = message.gameStartDetails;
+                }
+                else
+                {
+                    questions = message.questionsToSend;
+                    answers = message.answersToSend;
+                    currentQuestionNumber = StartNumber;
+                    currentAnswerNumber = StartNumber;
+                    HideStatisticsTables();
+                    ShowDetailsOfTheBeginningOfTheGameWithRandomPlayer(false);
+                    GiveAccessToPlayButtons(false);
+                    panelGame.Visible = true;
+                    labelOpponent.Text = message.opponentForGameName;
+                    richTextBoxGameStatus.Text = NullString;
+                    labelAnswerStatus.Text = Nothing;
+                    buttonAnswerA.Enabled = true;
+                    buttonAnswerB.Enabled = true;
+                    buttonAnswerC.Enabled = true;
+                    buttonAnswerD.Enabled = true;
+                    SetPromptsButtonsEnable(true);
+                    ShowQuestion();
+                    labelYourPointsNumber.Text = StringWithNull;
+                    labelOpponentPointsNumber.Text = StringWithNull;
+                }
+            };
+            if (InvokeRequired)
+                Invoke(FormAddGameResponse);
+            else
+                FormAddGameResponse();
+        }
+
+        private void ProcessYourAnswerStatusMessage(CommonInformation.Message message)
+        {
+            ProcessFormFilling FormAnswerStatus = delegate
+            {
+                if (message.isCorrectAnswer)
+                {
+                    labelAnswerStatus.Text = "Верно!";
+                    int points = int.Parse(labelYourPointsNumber.Text);
+                    points++;
+                    labelYourPointsNumber.Text = points.ToString();
+                }
+                else
+                {
+                    labelAnswerStatus.Text = "Неверно!";
+                }
+            };
+            if (InvokeRequired)
+                Invoke(FormAnswerStatus);
+            else
+                FormAnswerStatus();
+        }
+
+        private void ProcessOpponentRightAnswerMessage(CommonInformation.Message message)
+        {
+            ProcessFormFilling FormOpponentAnswerStatus = delegate
+            {
+                int opponentPoints = int.Parse(labelOpponentPointsNumber.Text);
+                opponentPoints++;
+                labelOpponentPointsNumber.Text = opponentPoints.ToString();
+
+            };
+            if (InvokeRequired)
+                Invoke(FormOpponentAnswerStatus);
+            else
+                FormOpponentAnswerStatus();
+        }
+
+        private void ProcessGameStatusMessage(CommonInformation.Message message)
+        {
+            ProcessFormFilling FormGameStatus = delegate
+            {
+                ClearGameField();
+                richTextBoxGameStatus.Text = message.gameStatus;
+            };
+            if (InvokeRequired)
+                Invoke(FormGameStatus);
+            else
+                FormGameStatus();
+        }
+
+        private void ProcessGameResultsMessage(CommonInformation.Message message)
+        {
+            ProcessFormFilling FormGameResult = delegate
+            {
+                ClearGameField();
+                labelOpponent.Text = Nothing;
+                panelGame.Visible = false;
+                richTextBoxGameStatus.Text = message.gameStatus;
+                GiveAccessToPlayButtons(true);
+            };
+            if (InvokeRequired)
+                Invoke(FormGameResult);
+            else
+                FormGameResult();
+        }
+
+        private void ProcessGetStatisticsMessage(CommonInformation.Message message)
+        {
+            ProcessFormFilling FormGetStatisticsResult = delegate
+            {
+                if (message.messageReceiverID != 0)
+                {
+                    richTextBoxStatistics.Visible = true;
+                    richTextBoxStatistics.Clear();
+                    if (message.isfailedToGetStatistics)
+                        richTextBoxStatistics.Text = "Данный участник чата ещё ни разу не играл!";
+                    else
+                    {
+                        richTextBoxStatistics.Text = message.playerInfo.playerName + "(" + message.playerInfo.playerStatus
+                        + ")" + "\r\n";
+                        richTextBoxStatistics.Text += "Игры                     " + message.playerInfo.numberOfPlayedGames + "\r\n";
+                        richTextBoxStatistics.Text += "Победы/ничьи/поражения   " + message.playerInfo.winsNumber
+                        + "/" + message.playerInfo.drawsNumber + "/" + message.playerInfo.losesNumber + "\r\n";
+                        richTextBoxStatistics.Text += "Верные/неверные ответы   " + message.playerInfo.rightAnswersNumber
+                        + "/" + message.playerInfo.wrongAnswersNumber + "\r\n";
+                        richTextBoxStatistics.Text += "Количество очков         " + message.playerInfo.pointsNumber + "\r\n";
+                    }
+                }
+                else
+                {
+                    dataGridViewStatistics.Rows.Clear();
+                    dataGridViewStatistics.Visible = true;
+                    foreach (PlayerInfo playerInfo in message.playerInfoList)
+                    {
+                        dataGridViewStatistics.Rows.Add(playerInfo.playerName, playerInfo.numberOfPlayedGames,
+                        playerInfo.winsNumber, playerInfo.drawsNumber, playerInfo.losesNumber, playerInfo.rightAnswersNumber,
+                        playerInfo.wrongAnswersNumber, playerInfo.pointsNumber);
+                    }
+                }
+            };
+            if (InvokeRequired)
+                Invoke(FormGetStatisticsResult);
+            else
+                FormGetStatisticsResult();
+        }
+
+        private void ProcessPromptResponseMessage(CommonInformation.Message message)
+        {
+            ProcessFormFilling FormPromptResponse = delegate
+            {
+                if (message.is5050Prompt)
+                {
+                    RemoveOneIncorrectAnswer(message.twoWrongAnswersFor5050Prompt[0]);
+                    RemoveOneIncorrectAnswer(message.twoWrongAnswersFor5050Prompt[1]);
+                }
+                else
+                {
+                    buttonAnswerA.Text = "A   " + message.probabilityOfAnswersCorrectness[0].ToString() + Percent;
+                    buttonAnswerB.Text = "B   " + message.probabilityOfAnswersCorrectness[1].ToString() + Percent;
+                    buttonAnswerC.Text = "C   " + message.probabilityOfAnswersCorrectness[2].ToString() + Percent;
+                    buttonAnswerD.Text = "D   " + message.probabilityOfAnswersCorrectness[3].ToString() + Percent;
+
+                    ChangeButtonColorAccordingToProbabilityOfVarian(buttonAnswerA, message.probabilityOfAnswersCorrectness[0]);
+                    ChangeButtonColorAccordingToProbabilityOfVarian(buttonAnswerB, message.probabilityOfAnswersCorrectness[1]);
+                    ChangeButtonColorAccordingToProbabilityOfVarian(buttonAnswerC, message.probabilityOfAnswersCorrectness[2]);
+                    ChangeButtonColorAccordingToProbabilityOfVarian(buttonAnswerD, message.probabilityOfAnswersCorrectness[3]);
+                }
+            };
+            if (InvokeRequired)
+                Invoke(FormPromptResponse);
+            else
+                FormPromptResponse();
+        }
+
+
+        private void GiveAccessToPlayButtons(bool isEnabled)
+        {
+            buttonPlay.Enabled = isEnabled;
+            buttonPlayWithRandomPlayer.Enabled = isEnabled;
+        }
+
+        private void ChangeButtonColorAccordingToProbabilityOfVarian(Button button, int probability)
+        {
+            if (probability < BoundaryProbabilityOfAnswerCorrectness[0])
+            {
+                button.BackColor = Color.LightCyan;
+            }
+            else if (probability < BoundaryProbabilityOfAnswerCorrectness[1])
+            {
+                button.BackColor = Color.PaleGreen;
+            }
+            else if (probability < BoundaryProbabilityOfAnswerCorrectness[2])
+            {
+                button.BackColor = Color.LightGreen;
+            }
+            else if (probability < BoundaryProbabilityOfAnswerCorrectness[3])
+            {
+                button.BackColor = Color.GreenYellow;
+            }
+            else if (probability < BoundaryProbabilityOfAnswerCorrectness[4])
+            {
+                button.BackColor = Color.LawnGreen;
+            }
+            else if (probability < BoundaryProbabilityOfAnswerCorrectness[5])
+            {
+                button.BackColor = Color.Lime;
+            }
+            else
+            {
+                button.BackColor = Color.LimeGreen;
+            }
+        }
+
+        private void HideStatisticsTables()
+        {
+            richTextBoxStatistics.Visible = false;
+            dataGridViewStatistics.Visible = false;
+        }
+
+        private void RemoveOneIncorrectAnswer(int incorrectAnswerNumber)
         {
             switch (incorrectAnswerNumber)
             {
-                case 0:
+                case StartNumber:
                     buttonAnswerA.Visible = false;
                     break;
-                case 1:
+                case buttonAnswerBClicked:
                     buttonAnswerB.Visible = false;
                     break;
-                case 2:
+                case buttonAnswerCClicked:
                     buttonAnswerC.Visible = false;
                     break;
-                case 3:
+                case buttonAnswerDClicked:
                     buttonAnswerD.Visible = false;
                     break;
             }
@@ -414,51 +586,46 @@ namespace ClientSide
 
         private void buttonPlay_Click(object sender, EventArgs e)
         {
-            if (currentGameTopic != -1)
+            if (currentGameTopic != InvalidValue)
             {
                 labelTopicIsNotSelected.Visible = false;
                 var message = new CommonInformation.Message() { messageType = CommonInformation.Message.MessageType.StartGameRequest,
-                messageReceiverID = CurrentDialog, gameTopic = currentGameTopic, isSelectedOpponentForGame = true };
+                messageReceiverID = currentDialog, gameTopic = currentGameTopic, isSelectedOpponentForGame = true };
                 client.SendMessage(message);
             }
             else
+            {
                 labelTopicIsNotSelected.Visible = true;
+            }     
+        }
+
+        private void FormAnswerTheQuestionMessage(int numberOfAnswer)
+        {
+            var message = new CommonInformation.Message() { messageType = CommonInformation.Message.MessageType.PlayerAnswer,
+            answeredQuestionNumber = currentQuestionNumber, answerNumber = numberOfAnswer };
+            currentQuestionNumber++;
+            ShowQuestion();
+            client.SendMessage(message);
         }
 
         private void buttonAnswerA_Click(object sender, EventArgs e)
         {
-            var message = new CommonInformation.Message() { messageType = CommonInformation.Message.MessageType.PlayerAnswer,
-            answeredQuestionNumber = currentQuestionNumber, answerNumber = 0 };
-            currentQuestionNumber++;
-            ShowQuestion();
-            client.SendMessage(message);
+            FormAnswerTheQuestionMessage(StartNumber);
         }
 
         private void buttonAnswerB_Click(object sender, EventArgs e)
         {
-            var message = new CommonInformation.Message() { messageType = CommonInformation.Message.MessageType.PlayerAnswer,
-            answeredQuestionNumber = currentQuestionNumber, answerNumber = 1 };
-            currentQuestionNumber++;
-            ShowQuestion();
-            client.SendMessage(message);
+            FormAnswerTheQuestionMessage(buttonAnswerBClicked);
         }
 
         private void buttonAnswerC_Click(object sender, EventArgs e)
         {
-            var message = new CommonInformation.Message() { messageType = CommonInformation.Message.MessageType.PlayerAnswer,
-            answeredQuestionNumber = currentQuestionNumber, answerNumber = 2 };
-            currentQuestionNumber++;
-            ShowQuestion();
-            client.SendMessage(message);
+            FormAnswerTheQuestionMessage(buttonAnswerCClicked);
         }
 
         private void buttonAnswerD_Click(object sender, EventArgs e)
         {
-            var message = new CommonInformation.Message() { messageType = CommonInformation.Message.MessageType.PlayerAnswer,
-            answeredQuestionNumber = currentQuestionNumber, answerNumber = 3 };
-            currentQuestionNumber++;
-            ShowQuestion();
-            client.SendMessage(message);
+            FormAnswerTheQuestionMessage(buttonAnswerDClicked);
         }
 
         private void buttonLeftGame_Click(object sender, EventArgs e)
@@ -478,22 +645,27 @@ namespace ClientSide
 
         private void buttonConnectToServer_Click_1(object sender, EventArgs e)
         {
-            if (textBoxName.Text != "")
+            if (!String.IsNullOrEmpty(textBoxName.Text))
             {
                 IPEndPoint IPendPoint = new IPEndPoint(IPAddress.Parse(textBoxServerIPAddress.Text), int.Parse(textBoxServerPort.Text));
                 if (client.ConnectToServer(IPendPoint, textBoxName.Text))
                 {
-                    labelDisplayConnection.Text = "ПОДКЛЮЧЕНО";
+                    labelDisplayConnection.Text = Connected;
                     buttonConnectToServer.Enabled = false;
                     buttonDisconnect.Enabled = true;
                     buttonSendMessage.Enabled = true;
                     buttonShowHistory.Enabled = true;
                 }
                 else
-                    labelDisplayConnection.Text = "Нет соединения...";
+                {
+                    labelDisplayConnection.Text = NotConnected;
+                }   
+                labelPutYourName.Visible = false;
             }
             else
-                MessageBox.Show("Введите свой ник!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            {
+                labelPutYourName.Visible = true;
+            }   
         }
 
         private void buttonDisconnect_Click_1(object sender, EventArgs e)
@@ -512,29 +684,31 @@ namespace ClientSide
                 buttonDisconnect.Enabled = false;
                 buttonSendMessage.Enabled = false;
                 buttonShowHistory.Enabled = false;
-                labelDisplayConnection.Text = "Нет соединения...";
+                labelDisplayConnection.Text = NotConnected;
                 textBoxServerIPAddress.Enabled = true;
-                textBoxServerIPAddress.Text = "";
+                textBoxServerIPAddress.Text = NullString;
                 textBoxServerPort.Enabled = true;
-                textBoxServerPort.Text = "";
+                textBoxServerPort.Text = NullString;
                 textBoxName.Enabled = true;
-                textBoxName.Text = "";
+                textBoxName.Text = NullString;
                 comboBoxParticipants.Items.Clear();
                 richTextBoxChatContent.Clear();
-                labelCurrentClientDialog.Text = "-";
+                labelCurrentClientDialog.Text = Nothing;
                 richTextBoxMessageContent.Clear();
-                labelNewMessage.Text = "-";
+                labelNewMessage.Text = Nothing;
             }
             else
-                labelDisplayConnection.Text = "...";
+            {
+                labelDisplayConnection.Text = Nothing;
+            }       
         }
 
         private void buttonShowHistory_Click_1(object sender, EventArgs e)
         {
-            comboBoxParticipants.SelectedIndex = 0;
-            CurrentDialog = CHATDIALOG;
+            comboBoxParticipants.SelectedIndex = StartNumber;
+            currentDialog = ChatDialog;
             selectedReceiverIndex = comboBoxParticipants.SelectedIndex;
-            labelCurrentClientDialog.Text = chatDialogsInfo[CHATDIALOG].Name;
+            labelCurrentClientDialog.Text = chatDialogsInfo[ChatDialog].dialogName;
             var message = new CommonInformation.Message() { messageType = CommonInformation.Message.MessageType.History };
             client.SendMessage(message);
             UpdateView();
@@ -542,16 +716,17 @@ namespace ClientSide
 
         private void buttonSendMessage_Click_1(object sender, EventArgs e)
         {
-            if (richTextBoxMessageContent.Text != "")
+            if (!String.IsNullOrEmpty(richTextBoxMessageContent.Text))
             {
                 if (client.isClientConnected)
                 {
                     string messagecontent = richTextBoxMessageContent.Text;
                     CommonInformation.Message message;
-                    if (CurrentDialog != CHATDIALOG)
+                    if (currentDialog != ChatDialog)
                     {
-                        message = new CommonInformation.Message(CurrentDialog, messagecontent);
-                        chatDialogsInfo[message.messageReceiverID].Messages.Add("Я : " + messagecontent);
+                        message = new CommonInformation.Message(currentDialog, messagecontent);
+                        chatDialogsInfo[message.messageReceiverID].messages.Add("Я : " + DateTime.Now.ToString()
+                        + " - " + messagecontent);
                     }
                     else
                     {
@@ -560,25 +735,27 @@ namespace ClientSide
                     }
                     client.SendMessage(message);
                     richTextBoxMessageContent.Clear();
-
+                    labelPutMessage.Visible = false;
                     UpdateView();
                 }
             }
             else
-                MessageBox.Show("Введите текст сообщения!", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            {
+                labelPutMessage.Visible = true;
+            }      
         }
 
         private void comboBoxParticipants_SelectedIndexChanged_1(object sender, EventArgs e)
         {
-            if (comboBoxParticipants.SelectedIndex != -1)
+            if (comboBoxParticipants.SelectedIndex != InvalidValue)
             {
                 selectedReceiverIndex = comboBoxParticipants.SelectedIndex;
-                CurrentDialog = clientsInfo[selectedReceiverIndex].clientID;
+                currentDialog = clientsInfo[selectedReceiverIndex].clientID;
                 UpdateView();
             }
         }
 
-        void ProcessGameContinuationMessage(CommonInformation.Message message)
+        private void ProcessGameContinuationMessage(CommonInformation.Message message)
         {
             message.messageTime = DateTime.Now;
             message.messageType = CommonInformation.Message.MessageType.StartGameResponse;
@@ -586,64 +763,79 @@ namespace ClientSide
             message.messageSenderID = messageSenderID;
             message.messageReceiverID = messageReceiverID;
             message.gameTopic = gametopic;
+            message.isSelectedOpponentForGame = true;
         }
 
-        void HideButtons()
+        private void HideButtons()
         {
             buttonAcceptGame.Visible = false;
             buttonRejectGame.Visible = false;
         }
 
-        private void buttonAcceptGame_Click(object sender, EventArgs e)
+        private void FormStartGameResponseMesssage(bool isGameContinue)
         {
             var message = new CommonInformation.Message();
             ProcessGameContinuationMessage(message);
-            message.mayStartGame = true;
+            message.mayStartGame = isGameContinue;
             HideButtons();
             client.SendMessage(message);
         }
 
+        private void buttonAcceptGame_Click(object sender, EventArgs e)
+        {
+            FormStartGameResponseMesssage(true);
+        }
+
         private void buttonRejectGame_Click(object sender, EventArgs e)
         {
-            var message = new CommonInformation.Message();
-            ProcessGameContinuationMessage(message);
-            message.mayStartGame = false;
-            HideButtons();
-            client.SendMessage(message);
+            FormStartGameResponseMesssage(false);
         }
 
         private void buttonShowStatistics_Click(object sender, EventArgs e)
         {
             var message = new CommonInformation.Message() { messageType = CommonInformation.Message.MessageType.GetStatistics,
-            messageReceiverID = CurrentDialog};
+            messageReceiverID = currentDialog};
             client.SendMessage(message);
         }
 
         private void comboBoxGameTopics_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBoxGameTopics.SelectedIndex != -1)
+            if (comboBoxGameTopics.SelectedIndex != InvalidValue)
+            {
                 currentGameTopic = comboBoxGameTopics.SelectedIndex;
+            }             
+        }
+
+        private void SendPromptRequestMessage(Button buttonToDisable, Button buttonToHide, bool is5050prompt)
+        {
+            var message = new CommonInformation.Message() { messageType = CommonInformation.Message.MessageType.PromptRequest,
+            is5050Prompt = is5050prompt, answeredQuestionNumber = currentQuestionNumber };
+            buttonToDisable.Enabled = false;
+            buttonToHide.Visible = false;
+            isPromptUsed = true;
+            client.SendMessage(message);
         }
 
         private void button5050Prompt_Click(object sender, EventArgs e)
         {
-            var message = new CommonInformation.Message() { is5050Prompt = true, answeredQuestionNumber = currentQuestionNumber};
-            button5050Prompt.Enabled = false;
-            client.SendMessage(message);
+            SendPromptRequestMessage(button5050Prompt, buttonHallPrompt, true);
         }
 
         private void buttonHallPrompt_Click(object sender, EventArgs e)
         {
-            var message = new CommonInformation.Message() { is5050Prompt = false, answeredQuestionNumber = currentQuestionNumber };
-            buttonHallPrompt.Enabled = false;
-            client.SendMessage(message);
+            SendPromptRequestMessage(buttonHallPrompt, button5050Prompt, false);
+        }
+
+        private void ShowDetailsOfTheBeginningOfTheGameWithRandomPlayer(bool isPlayButtonClick)
+        {
+            buttonPlayWithRandomPlayer.Visible = !isPlayButtonClick;
+            buttonInterruptWaitingForOpponent.Visible = isPlayButtonClick;
+            labelWaitingForOpponent.Visible = isPlayButtonClick;
         }
 
         private void buttonPlayWithRandomPlayer_Click(object sender, EventArgs e)
         {
-            buttonPlayWithRandomPlayer.Visible = false;
-            buttonInterruptWaitingForOpponent.Visible = true;
-            labelWaitingForOpponent.Visible = true;
+            ShowDetailsOfTheBeginningOfTheGameWithRandomPlayer(true);
             var message = new CommonInformation.Message() { messageType = CommonInformation.Message.MessageType.StartGameRequest,
             isSelectedOpponentForGame = false};
             client.SendMessage(message);
@@ -651,11 +843,14 @@ namespace ClientSide
 
         private void buttonInterruptWaitingForOpponent_Click(object sender, EventArgs e)
         {
-            buttonPlayWithRandomPlayer.Visible = true;
-            buttonInterruptWaitingForOpponent.Visible = false;
-            labelWaitingForOpponent.Visible = false;
+            ShowDetailsOfTheBeginningOfTheGameWithRandomPlayer(false);
             var message = new CommonInformation.Message() { messageType = CommonInformation.Message.MessageType.InterruptSearchingForOpponent };
             client.SendMessage(message);
+        }
+
+        private void buttonHideStatistics_Click(object sender, EventArgs e)
+        {
+            HideStatisticsTables();
         }
     }
 }
